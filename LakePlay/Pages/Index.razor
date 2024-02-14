@@ -1,0 +1,62 @@
+﻿@page "/"
+@inject Hub hub;
+@inject List<TriviaQuestion> gameQuestions;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+
+<PageTitle>Index</PageTitle>
+
+<input @bind-value="_question" />
+<button @onclick="OnAdd">Add</button>
+<button @onclick="OnRefreshClick">Refresh</button>
+<br/>
+<input @bind-value="_userName" />
+<button @onclick="OnSaveUserName">Save</button>
+<table>
+    <tr>
+        <th>Question</th>
+    </tr>
+
+    @foreach (var question in gameQuestions)
+    {
+        <tr>
+            <td>@question.Question</td>
+        </tr>
+    }
+</table>
+@code {
+    private string _question = string.Empty;
+    private string _userName = string.Empty;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            hub.Subscribe<TriviaRefresh>(OnTriviaRefresh);
+            _userName = await localStorage.GetItemAsStringAsync("UserName");
+            StateHasChanged();
+        }
+    }
+
+    private async void OnSaveUserName()
+    {
+        await localStorage.SetItemAsStringAsync("UserName", _userName);
+    }
+    private void OnAdd()
+    {
+        gameQuestions.Add(new TriviaQuestion(_question));
+        _question = string.Empty;
+        StateHasChanged();
+    }
+    private void OnRefreshClick()
+    {
+        hub.Publish<TriviaRefresh>(new TriviaRefresh());
+    }
+
+    private void OnTriviaRefresh(TriviaRefresh trivia)
+    {
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+}
