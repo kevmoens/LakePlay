@@ -1,7 +1,9 @@
 ﻿@page "/"
+@using Microsoft.EntityFrameworkCore
 @inject Hub hub;
 @inject List<TriviaQuestion> gameQuestions;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject LakePlayContext dbContext;
 
 <PageTitle>Index</PageTitle>
 
@@ -19,7 +21,7 @@
     @foreach (var question in gameQuestions)
     {
         <tr>
-            <td>@question.Question</td>
+            <td>@question.Text</td>
         </tr>
     }
 </table>
@@ -30,7 +32,13 @@
     {
         if (firstRender)
         {
-            hub.Subscribe<TriviaRefresh>(OnTriviaRefresh);
+            if (gameQuestions.Count == 0 && dbContext?.Questions != null)
+            {
+                
+                var questions = await dbContext.Questions.ToListAsync();
+                gameQuestions.AddRange(questions);
+            }
+            hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);
             _userName = await localStorage.GetItemAsStringAsync("UserName");
             StateHasChanged();
         }
@@ -42,16 +50,16 @@
     }
     private void OnAdd()
     {
-        gameQuestions.Add(new TriviaQuestion(_question));
+        gameQuestions.Add(new TriviaQuestion() { Text = _question });
         _question = string.Empty;
         StateHasChanged();
     }
     private void OnRefreshClick()
     {
-        hub.Publish<TriviaRefresh>(new TriviaRefresh());
+        hub.Publish<TriviaQuestionOption>(new TriviaQuestionOption());
     }
 
-    private void OnTriviaRefresh(TriviaRefresh trivia)
+    private void OnTriviaRefresh(TriviaQuestionOption trivia)
     {
         InvokeAsync(() =>
         {

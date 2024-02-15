@@ -11,6 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
+builder.Services.AddSingleton<LakePlayContext>();
 
 builder.Services.AddSingleton<Hub>(Hub.Default);
 var app = builder.Build();
