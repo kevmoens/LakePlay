@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using LakePlay.Data;
+using LakePlay.WebUtil;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using PubSub;
@@ -12,6 +13,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
 builder.Services.AddSingleton<LakePlayContext>();
+builder.Services.AddTransient<JsConsole>();
 
 builder.Services.AddSingleton<Hub>(Hub.Default);
 var app = builder.Build();

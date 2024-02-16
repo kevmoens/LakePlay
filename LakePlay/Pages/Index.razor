@@ -4,13 +4,14 @@
 @inject List<TriviaQuestion> gameQuestions;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 @inject LakePlayContext dbContext;
+@inject JsConsole jsConsole;
 
 <PageTitle>Index</PageTitle>
 
 <input @bind-value="_question" />
 <button @onclick="OnAdd">Add</button>
 <button @onclick="OnRefreshClick">Refresh</button>
-<br/>
+<br />
 <input @bind-value="_userName" />
 <button @onclick="OnSaveUserName">Save</button>
 <table>
@@ -31,17 +32,27 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            if (gameQuestions.Count == 0 && dbContext?.Questions != null)
+            try
             {
-                
-                var questions = await dbContext.Questions.ToListAsync();
-                gameQuestions.AddRange(questions);
+                if (gameQuestions.Count == 0 && dbContext?.Questions != null)
+                {
+                    await jsConsole.LogAsync("Before await dbContext.Questions.ToListAsync();");
+                    var questions = await dbContext.Questions.ToListAsync();
+                    await jsConsole.LogAsync("After await dbContext.Questions.ToListAsync();");
+                    gameQuestions.AddRange(questions);
+                    await jsConsole.LogAsync("After gameQuestions.AddRange(questions);");
+                }
+                await jsConsole.LogAsync("Before await localStorage.GetItemAsStringAsync(\"UserName\");");
+                hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);
+                await jsConsole.LogAsync("After hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);");
+                _userName = await localStorage.GetItemAsStringAsync("UserName");
+                await jsConsole.LogAsync("After await localStorage.GetItemAsStringAsync(\"UserName\");");
+                StateHasChanged();
             }
-            hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);
-            _userName = await localStorage.GetItemAsStringAsync("UserName");
-            StateHasChanged();
-        }
+            catch (Exception ex)
+            {
+                await jsConsole.LogAsync(ex.Message);
+            }
     }
 
     private async void OnSaveUserName()
