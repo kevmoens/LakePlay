@@ -4,28 +4,22 @@ namespace LakePlay.Data
 {
     public class LakePlayContext : DbContext
     {
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
+
+        public LakePlayContext(IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            _configuration = configuration;
+            _environment = environment;
+        }
         public DbSet<TriviaQuestion>? Questions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var accountEndpoint = Environment.GetEnvironmentVariable("CosmosAccountEndpoint", EnvironmentVariableTarget.User);
-            if (string.IsNullOrEmpty(accountEndpoint))
-            {
-                accountEndpoint = Environment.GetEnvironmentVariable("CosmosAccountEndpoint", EnvironmentVariableTarget.Machine);
-            }
-            if (string.IsNullOrEmpty(accountEndpoint))
-            {
-                throw new ArgumentNullException("CosmosAccountEndpoint");
-            }
-            var accountKey = Environment.GetEnvironmentVariable("CosmosAccountKey", EnvironmentVariableTarget.User);
-            if (string.IsNullOrEmpty(accountKey))
-            {
-                accountKey = Environment.GetEnvironmentVariable("CosmosAccountKey", EnvironmentVariableTarget.Machine);
-            }
-            if (string.IsNullOrEmpty(accountKey))
-            {
-                throw new ArgumentNullException("CosmosAccountKey");
-            }
+
+            string? accountEndpoint = _configuration["CosmosAccountEndpoint"];
+            string? accountKey = _configuration["CosmosAccountKey"];
+
             optionsBuilder.UseCosmos(
                 accountEndpoint,
                 accountKey,

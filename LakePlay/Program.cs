@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Blazored.LocalStorage;
 using LakePlay.Data;
 using LakePlay.WebUtil;
@@ -10,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Configuration.AddAzureKeyVault(
+    new Uri("https://lakeplaystore.vault.azure.net/"),
+    new DefaultAzureCredential());
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
 builder.Services.AddSingleton<LakePlayContext>();
