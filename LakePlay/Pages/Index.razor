@@ -1,81 +1,126 @@
 ﻿@page "/"
-@using Microsoft.EntityFrameworkCore
-@inject Hub hub;
-@inject List<TriviaQuestion> gameQuestions;
+@inject ConcurrentDictionary<Guid, UserLogin> userLogins;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
-@inject LakePlayContext dbContext;
 @inject JsConsole jsConsole;
+@inject IConfiguration configuration
+@inject NavigationManager navigationManager
 
 <PageTitle>Index</PageTitle>
 
-<input @bind-value="_question" />
-<button @onclick="OnAdd">Add</button>
-<button @onclick="OnRefreshClick">Refresh</button>
-<br />
-<input @bind-value="_userName" />
-<button @onclick="OnSaveUserName">Save</button>
-<table>
-    <tr>
-        <th>Question</th>
-    </tr>
+<div class="login-img">
+    <img src="/login-bkg-tile.png" alt="Login Background Title">
+    <div class="login-overlay">
 
-    @foreach (var question in gameQuestions)
-    {
-        <tr>
-            <td>@question.Text</td>
-        </tr>
-    }
-</table>
+        <div class="login-overlay-items">
+            <EditForm Model="@userLogin" OnValidSubmit="OnStart">
+                <DataAnnotationsValidator />
+
+                <div class="login-input">
+                    <div class="form-group">
+                        <InputText id="username" @bind-Value="userLogin.UserName"  class="form-control" placeholder="User Name"/>
+                        <ValidationMessage For="@(() => userLogin.UserName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <InputText id="email" @bind-Value="userLogin.Email" class="form-control" placeholder="Email Address" />
+                        <ValidationMessage For="@(() => userLogin.Email)" />
+                    </div>
+
+                    <button type="submit">Start</button>
+
+                    <!-- Custom validation message -->
+                    @if (!ValidateForm())
+                    {
+                        <div class="validation-error">@_validationMessage</div>
+                    }
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+</div>
+
 @code {
-    private string _question = string.Empty;
-    private string _userName = string.Empty;
+    private UserLogin userLogin = new UserLogin();
+    private string _validationMessage = string.Empty;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
             try
             {
-                if (gameQuestions.Count == 0 && dbContext?.Questions != null)
+                userLogin.UserName = await localStorage.GetItemAsStringAsync("UserName");
+                userLogin.Email = await localStorage.GetItemAsStringAsync("Email");
+                var userId = await localStorage.GetItemAsStringAsync("UserId");
+                if (!string.IsNullOrEmpty(userId))
                 {
-                    await jsConsole.LogAsync("Before await dbContext.Questions.ToListAsync();");
-                    var questions = await dbContext.Questions.ToListAsync();
-                    await jsConsole.LogAsync("After await dbContext.Questions.ToListAsync();");
-                    gameQuestions.AddRange(questions);
-                    await jsConsole.LogAsync("After gameQuestions.AddRange(questions);");
+                    userLogin.UserId = Guid.Parse(userId);
                 }
-                await jsConsole.LogAsync("Before await localStorage.GetItemAsStringAsync(\"UserName\");");
-                hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);
-                await jsConsole.LogAsync("After hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);");
-                _userName = await localStorage.GetItemAsStringAsync("UserName");
-                await jsConsole.LogAsync("After await localStorage.GetItemAsStringAsync(\"UserName\");");
+                if (!string.IsNullOrEmpty(userLogin.UserName) && !string.IsNullOrEmpty(userLogin.Email) && userLogin.UserId != Guid.Empty)
+                {
+                    Navigate();
+                }
+
                 StateHasChanged();
             }
             catch (Exception ex)
             {
                 await jsConsole.LogAsync(ex.Message);
             }
+        }
     }
 
-    private async void OnSaveUserName()
+    private bool ValidateForm()
     {
-        await localStorage.SetItemAsStringAsync("UserName", _userName);
-    }
-    private void OnAdd()
-    {
-        gameQuestions.Add(new TriviaQuestion() { Text = _question });
-        _question = string.Empty;
-        StateHasChanged();
-    }
-    private void OnRefreshClick()
-    {
-        hub.Publish<TriviaQuestionOption>(new TriviaQuestionOption());
-    }
-
-    private void OnTriviaRefresh(TriviaQuestionOption trivia)
-    {
-        InvokeAsync(() =>
+        if (userLogins.ContainsKey(userLogin.UserId))
         {
-            StateHasChanged();
-        });
+            _validationMessage = "User already exists";
+            return false;
+        }
+        // Perform custom validation logic here
+        // Return true if the form is valid, false otherwise
+        return true;
+    }
+
+    private async void OnStart()
+    {
+        if (!ValidateForm())
+        {
+            return;
+        }
+
+        if (userLogin.UserId == Guid.Empty)
+        {
+            userLogin.UserId = Guid.NewGuid();
+        }
+        // Perform actions when the form is valid
+        await localStorage.SetItemAsStringAsync("UserName", userLogin.UserName);
+        await localStorage.SetItemAsStringAsync("Email", userLogin.Email);
+        await localStorage.SetItemAsStringAsync("UserId", userLogin.UserId.ToString());
+
+        if (!userLogins.TryAdd(userLogin.UserId, userLogin))
+        {
+            _validationMessage = "User already exists";
+            return;
+        }
+
+        Navigate();
+    }
+
+    private void Navigate()
+    {
+        if (userLogin.UserName.Equals("MRamage338", StringComparison.OrdinalIgnoreCase) && userLogin.Email.Equals("matt@triviaforcheeseheads.com", StringComparison.OrdinalIgnoreCase))
+        {
+            navigationManager.NavigateTo("/Admin");
+            return;
+        }
+
+        //TODO Check if game is in progress....
+
+
+        //If Game hasn't started then go to Waiting Page
+        navigationManager.NavigateTo("/Waiting");
     }
 
 }

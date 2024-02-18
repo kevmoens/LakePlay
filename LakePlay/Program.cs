@@ -1,10 +1,12 @@
 using Azure.Identity;
 using Blazored.LocalStorage;
 using LakePlay.Data;
+using LakePlay.Data.Login;
 using LakePlay.WebUtil;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using PubSub;
+using System.Collections.Concurrent;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Configuration.AddAzureKeyVault(
     new DefaultAzureCredential());
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
+builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddSingleton<LakePlayContext>();
 builder.Services.AddTransient<JsConsole>();
 
