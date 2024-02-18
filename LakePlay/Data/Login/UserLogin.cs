@@ -2,7 +2,7 @@
 
 namespace LakePlay.Data.Login
 {
-    public class UserLogin
+    public record UserLogin
     {
         [Required(ErrorMessage = "User Name is required")]
         public string UserName { get; set; } = string.Empty;

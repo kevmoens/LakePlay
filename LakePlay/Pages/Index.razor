@@ -1,9 +1,4 @@
 ﻿@page "/"
-@inject ConcurrentDictionary<Guid, UserLogin> userLogins;
-@inject Blazored.LocalStorage.ILocalStorageService localStorage;
-@inject JsConsole jsConsole;
-@inject IConfiguration configuration
-@inject NavigationManager navigationManager
 
 <PageTitle>Index</PageTitle>
 
@@ -28,7 +23,6 @@
 
                     <button type="submit">Start</button>
 
-                    <!-- Custom validation message -->
                     @if (!ValidateForm())
                     {
                         <div class="validation-error">@_validationMessage</div>
@@ -39,88 +33,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private UserLogin userLogin = new UserLogin();
-    private string _validationMessage = string.Empty;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            try
-            {
-                userLogin.UserName = await localStorage.GetItemAsStringAsync("UserName");
-                userLogin.Email = await localStorage.GetItemAsStringAsync("Email");
-                var userId = await localStorage.GetItemAsStringAsync("UserId");
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    userLogin.UserId = Guid.Parse(userId);
-                }
-                if (!string.IsNullOrEmpty(userLogin.UserName) && !string.IsNullOrEmpty(userLogin.Email) && userLogin.UserId != Guid.Empty)
-                {
-                    Navigate();
-                }
-
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                await jsConsole.LogAsync(ex.Message);
-            }
-        }
-    }
-
-    private bool ValidateForm()
-    {
-        if (userLogins.ContainsKey(userLogin.UserId))
-        {
-            _validationMessage = "User already exists";
-            return false;
-        }
-        // Perform custom validation logic here
-        // Return true if the form is valid, false otherwise
-        return true;
-    }
-
-    private async void OnStart()
-    {
-        if (!ValidateForm())
-        {
-            return;
-        }
-
-        if (userLogin.UserId == Guid.Empty)
-        {
-            userLogin.UserId = Guid.NewGuid();
-        }
-        // Perform actions when the form is valid
-        await localStorage.SetItemAsStringAsync("UserName", userLogin.UserName);
-        await localStorage.SetItemAsStringAsync("Email", userLogin.Email);
-        await localStorage.SetItemAsStringAsync("UserId", userLogin.UserId.ToString());
-
-        if (!userLogins.TryAdd(userLogin.UserId, userLogin))
-        {
-            _validationMessage = "User already exists";
-            return;
-        }
-
-        Navigate();
-    }
-
-    private void Navigate()
-    {
-        if (userLogin.UserName.Equals("MRamage338", StringComparison.OrdinalIgnoreCase) && userLogin.Email.Equals("matt@triviaforcheeseheads.com", StringComparison.OrdinalIgnoreCase))
-        {
-            navigationManager.NavigateTo("/Admin");
-            return;
-        }
-
-        //TODO Check if game is in progress....
-
-
-        //If Game hasn't started then go to Waiting Page
-        navigationManager.NavigateTo("/Waiting");
-    }
-
-}

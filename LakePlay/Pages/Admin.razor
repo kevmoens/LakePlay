@@ -1,6 +1,29 @@
 ﻿@page "/admin"
-<h3>Admin</h3>
 
-@code {
+<PageTitle>Admin Settings</PageTitle>
 
-}
+<div class="top-row">
+    <button @onclick="OnLogout">Logout</button>
+</div>
+
+<div class="grid-container">
+    <div class="item-gameheader">
+        <h2>Game</h2>
+    </div>
+    <div class="item-game">
+        <table>
+            <tr>
+                <td>Number of Rounds</td>
+                <td><input type="number" @bind-value="NumberOfRounds" min="1" /></td>
+            </tr>
+            <tr>
+                <td>Current Round</td>
+                <td><input type="number" @bind-value="CurrentRound" min="1" readonly /> </td>
+            </tr>
+        </table>
+
+        <button @onclick="OnResetRounds">Reset Rounds</button>
+    </div>
+    
+</div>
+

@@ -1,0 +1,42 @@
+﻿
+.top-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+
+    .top-row button {
+        align-self: flex-end;
+        margin-right: 10px;
+    }
+
+table, th, td {
+    border: 1px solid black;
+}
+
+.item-game {
+    grid-area: game;
+}
+
+.item-gameheader {
+    grid-area: gameheader;
+}
+
+
+.grid-container {
+    display: grid;
+    grid-template-areas:
+        'gameheader'
+        'game'
+        'game';
+    gap: 3px;
+    background-color: #aaa;
+    padding: 3px;
+}
+
+    .grid-container > div {
+        background-color: rgba(255, 255, 255, 1);
+        text-align: center;
+        padding: 10px 0;
+    }
