@@ -11,12 +11,13 @@ namespace LakePlay.Pages
         [Inject]
         ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
         [Inject]
-        Blazored.LocalStorage.ILocalStorageService? LocalStorage { get; set; }
-        [Inject]
         JsConsole? JsConsole { get; set; }
         [Inject]
         NavigationManager? NavManager { get; set; }
-
+        [Inject]
+        UserLoginRepo? UserLoginRepo { get; set; }
+        [Inject]
+        LoginVerification? LoginVerify { get; set; }
 
         private readonly UserLogin userLogin = new();
         private string _validationMessage = string.Empty;
@@ -30,16 +31,14 @@ namespace LakePlay.Pages
 
             try
             {
-                userLogin.UserName = await LocalStorage!.GetItemAsStringAsync("UserName");
-                userLogin.Email = await LocalStorage.GetItemAsStringAsync("Email");
-                var userId = await LocalStorage.GetItemAsStringAsync("UserId");
-                if (!string.IsNullOrEmpty(userId))
+                var user = await UserLoginRepo!.Load();
+               
+                if (LoginVerify!.VerifyLogin(user))
                 {
-                    userLogin.UserId = Guid.Parse(userId);
-                }
-
-                if (!string.IsNullOrEmpty(userLogin.UserName) && !string.IsNullOrEmpty(userLogin.Email) && userLogin.UserId != Guid.Empty)
-                {
+                    userLogin.UserName = user.UserName;
+                    userLogin.Email = user.Email;
+                    userLogin.UserId = user.UserId;
+                    
                     if (UsePreviousLogin())
                     {
                         return;
@@ -111,11 +110,8 @@ namespace LakePlay.Pages
                     userLogin.UserId = Guid.NewGuid();
                 }
 
-                // Perform actions when the form is valid
-                await LocalStorage!.SetItemAsStringAsync("UserName", userLogin.UserName);
-                await LocalStorage.SetItemAsStringAsync("Email", userLogin.Email);
-                await LocalStorage.SetItemAsStringAsync("UserId", userLogin.UserId.ToString());
-
+                await UserLoginRepo!.Save(userLogin);
+                
                 if (UserLogins!.Values.Any(u => u.UserName.Equals(userLogin.UserName, StringComparison.OrdinalIgnoreCase)))
                 {
                     _validationMessage = "User already exists";
@@ -132,8 +128,7 @@ namespace LakePlay.Pages
 
         private void Navigate()
         {
-            if (userLogin.UserName.Equals("MRamage338", StringComparison.OrdinalIgnoreCase) 
-                && userLogin.Email.Equals("matt@triviaforcheeseheads.com", StringComparison.OrdinalIgnoreCase))
+            if (LoginVerification.IsAdmin(userLogin))
             {
                 NavManager!.NavigateTo("/Admin");
                 return;

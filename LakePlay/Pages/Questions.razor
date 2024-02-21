@@ -1,0 +1,91 @@
+﻿@page "/questions"
+<PageTitle>Questions</PageTitle>
+
+<div class="top-row">
+    <button @onclick="OnBack">Back</button>
+    <button @onclick="OnLogout">Logout</button>
+</div>
+
+
+<h3>Questions</h3>
+
+<div class="d-flex justify-content-start">
+    <div class="pt-2 pe-2">
+        <a href='/questions/add' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add Question
+        </a>
+    </div>
+  @*   <div class="p-2">
+        <button class="btn btn-info" @onclick="OnResetUsed">Reset Used</button>
+    </div>
+    <div class="p-2">
+        <button class="btn btn-info" @onclick="OnExport">Export</button>
+    </div>
+    <div class="p-2">
+        Import <InputFile class="btn btn-info" OnChange="OnImport">Import</InputFile>
+    </div> *@
+</div>
+<div class="row">
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Search Questions"
+               @bind="SearchString" @bind:event="oninput" @onkeyup="FilterQuestion" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times">Reset</i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<br />
+@if (questionList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped align-middle table-bordered">
+        <thead class="table-success">
+            <tr>
+                <th>ID</th>
+                <th>Text</th>
+                <th>Difficulty</th>
+                <th>Used</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quest in questionList)
+            {
+                <tr>
+                    <td>@quest.Id</td>
+
+                    <td>@quest.Text</td>                   
+                    <td>@quest!.Difficulty</td>
+                    <td>
+                        @quest!.Used
+                        @if (quest!.Used)
+                        {
+                            <button class="btn btn-outline-primary" @onclick="()=> OnUnused(quest!)">Reset</button>
+
+                        }
+                    </td>
+
+                    <td>
+                        <a href='/questions/edit/@quest.Id' class="btn btn-outline-dark" role="button">
+                            Edit
+                        </a>
+                        <a href='/questions/delete/@quest.Id' class="btn btn-outline-danger" role="button">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}

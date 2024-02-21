@@ -6,6 +6,7 @@ using System;
 using LakePlay.Data.Login;
 using LakePlay.WebUtil;
 using System.Collections.Concurrent;
+using Microsoft.Azure.Cosmos;
 
 namespace LakePlay.Pages
 {
@@ -21,7 +22,11 @@ namespace LakePlay.Pages
         NavigationManager? NavManager { get; set; }
         [Inject]
         ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
-
+        [Inject]
+        LoginVerification? LoginVerify { get; set; }
+        [Inject]
+        UserLoginRepo? UserLoginRepo { get; set; }
+        private UserLogin? User { get; set; }
 
         private int _numberOfRounds = 1;
         public int NumberOfRounds { get { return _numberOfRounds; } set { _numberOfRounds = value; SaveRounds(); } }
@@ -43,7 +48,42 @@ namespace LakePlay.Pages
                 _currentRound = currentRound;
             }
 
-                StateHasChanged();
+            StateHasChanged();
+        }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                try
+                {
+                    User = await UserLoginRepo!.Load();
+                    if (LoginVerify!.VerifyLogin(User, true) == false)
+                    {
+                        NavManager!.NavigateTo("/");
+                        return;
+                    }
+                    StateHasChanged();
+                }
+                catch (Exception ex)
+                {
+                    await JsConsole!.LogAsync(ex.Message);
+                }
+            }
+        }
+        async void OnLogout()
+        {
+
+            UserLogins!.TryRemove(User!.UserId, out _);
+
+            try
+            {
+                await UserLoginRepo!.Remove();
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
+            NavManager!.NavigateTo("/");
         }
         async void SaveRounds()
         {
@@ -63,25 +103,10 @@ namespace LakePlay.Pages
             StateHasChanged();
         }
 
-        async void OnLogout()
-        {
-            var userId = await LocalStorage!.GetItemAsync<string>("UserID");
-            if (userId != null)
-            {
-                UserLogins!.TryRemove(Guid.Parse(userId), out _);
-            }
 
-            try
-            {
-                await LocalStorage.RemoveItemAsync("UserName");
-                await LocalStorage.RemoveItemAsync("Email");
-                await LocalStorage.RemoveItemAsync("UserID");
-            }
-            catch (Exception ex)
-            {
-                await JsConsole!.LogAsync(ex.Message);
-            }
-            NavManager!.NavigateTo("/");
+        void OnQuestions()
+        {
+            NavManager!.NavigateTo("/questions");
         }
     }
 }

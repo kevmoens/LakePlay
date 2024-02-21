@@ -1,0 +1,63 @@
+﻿@page "/questions/add"
+@page "/questions/edit/{QuestionId}"
+
+<PageTitle>@Title Questions</PageTitle>
+
+<div class="top-row">
+    <button @onclick="OnLogout">Logout</button>
+</div>
+
+<h1>@Title Question</h1>
+<hr />
+<div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" @onclick="SaveQuestion">Save</button>
+        <button class="btn btn-danger" @onclick="Cancel">Cancel</button>
+    </div>
+    <div class="mb-3">
+        <label for="Text" class="form-label">Question</label>
+        <div class="col-md-8">
+            <textarea class="form-control" name="text" rows="5" cols="10" wrap="soft" @bind="question.Text" />
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="Difficulty" class="form-label">Difficulty</label>
+        <div class="col-md-1">
+            <input type="number" class="form-control" @bind="question!.Difficulty" />
+        </div>
+    </div>
+</div>
+
+<h2>Options</h2>
+<button class="btn btn-primary" @onclick="OnAddOption">+</button>
+<table class="table table-striped align-middle table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th>Text</th>
+            <th style="width: 100px;">Is Answer</th>
+            <th style="width: 60px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var option in question.ListOptions)
+        {
+            <tr>
+                <td>
+                    <div>
+                        <textarea class="form-control" name="text" rows="5" cols="10" wrap="soft" @bind="option.Text" />
+                    </div>
+                </td>                
+                <td>
+                    <input type="checkbox" @bind="option.IsAnswer" />
+                </td>
+
+                <td>
+                    <button class="btn btn-outline-danger" @onclick="() => OnDeleteOption(option!)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>

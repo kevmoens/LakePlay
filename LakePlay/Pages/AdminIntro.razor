@@ -1,0 +1,25 @@
+﻿@page "/adminintro"
+@using QRCoder
+
+<h3>Game Starting Shortly</h3>
+
+<img src="data:image/png;base64,@(GenerateQRCodeBase64(NavigationManager!.BaseUri))" alt="QR Code">
+<button @onclick="OnStart">Start</button>
+@code {
+    [Inject]
+    private NavigationManager? NavigationManager { get; set; }
+    private string GenerateQRCodeBase64(string text)
+    {
+        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+
+        var qrCodeImage = qrCode.GetGraphic(10);
+
+        return Convert.ToBase64String(qrCodeImage);
+    }
+    private void OnStart()
+    {
+        NavigationManager!.NavigateTo("/AdminRound");
+    }
+}

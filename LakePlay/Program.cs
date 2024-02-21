@@ -20,6 +20,8 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddSingleton<LakePlayContext>();
+builder.Services.AddTransient<UserLoginRepo>();
+builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
 
 builder.Services.AddSingleton<Hub>(Hub.Default);

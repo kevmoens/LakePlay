@@ -5,12 +5,10 @@ namespace LakePlay.Data
     public class LakePlayContext : DbContext
     {
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
 
-        public LakePlayContext(IConfiguration configuration, IWebHostEnvironment environment)
+        public LakePlayContext(IConfiguration configuration)
         {
             _configuration = configuration;
-            _environment = environment;
         }
         public DbSet<TriviaQuestion>? Questions { get; set; }
 
