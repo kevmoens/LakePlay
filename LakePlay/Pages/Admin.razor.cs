@@ -7,6 +7,8 @@ using LakePlay.Data.Login;
 using LakePlay.WebUtil;
 using System.Collections.Concurrent;
 using Microsoft.Azure.Cosmos;
+using PubSub;
+using Microsoft.EntityFrameworkCore;
 
 namespace LakePlay.Pages
 {
@@ -26,12 +28,18 @@ namespace LakePlay.Pages
         LoginVerification? LoginVerify { get; set; }
         [Inject]
         UserLoginRepo? UserLoginRepo { get; set; }
+        [Inject]
+        Game? Game { get; set; }
+
+        [Inject]
+        List<TriviaQuestion>? GameQuestions { get; set; }
+        [Inject]
+        LakePlayContext? DbContext { get; set; }
+
         private UserLogin? User { get; set; }
 
         private int _numberOfRounds = 1;
         public int NumberOfRounds { get { return _numberOfRounds; } set { _numberOfRounds = value; SaveRounds(); } }
-        private int _currentRound = 1;
-        public int CurrentRound { get { return _currentRound; } set { _currentRound = value; } }
 
         protected override async Task OnInitializedAsync()
         {
@@ -40,12 +48,7 @@ namespace LakePlay.Pages
             if (int.TryParse(numOfRounds, out int numberOfRounds))
             {
                 _numberOfRounds = numberOfRounds;
-            }
-            var curRound = await LocalStorage.GetItemAsync<string>("CurrentRound");
-
-            if (int.TryParse(curRound, out int currentRound))
-            {
-                _currentRound = currentRound;
+                Game!.NumberOfRounds = numberOfRounds;
             }
 
             StateHasChanged();
@@ -61,6 +64,12 @@ namespace LakePlay.Pages
                     {
                         NavManager!.NavigateTo("/");
                         return;
+                    }
+
+                    if (GameQuestions!.Count == 0 && DbContext?.Questions != null)
+                    {
+                        var questions = await DbContext.Questions.ToListAsync();
+                        GameQuestions.AddRange(questions);
                     }
                     StateHasChanged();
                 }
@@ -87,11 +96,25 @@ namespace LakePlay.Pages
         }
         async void SaveRounds()
         {
+            Game!.NumberOfRounds = NumberOfRounds;
             await LocalStorage!.SetItemAsync("NumberOfRounds", NumberOfRounds.ToString());
         }
-        async void OnResetRounds()
+
+
+        void OnQuestions()
         {
-            CurrentRound = 1;
+            NavManager!.NavigateTo("/questions");
+        }
+        void OnStartGame()
+        {
+            Game!.ChangeState(GameState.AboutToStart);
+            NavManager!.NavigateTo("/adminintro");
+        }
+        void OnResetGameStatus()
+        {
+            Game!.ChangeState(GameState.NotSet);
+
+            Game.CurrentRound = 1;
             foreach (var question in Repo!.Questions!.Where(q => q.AskedThisRound == true))
             {
                 question.AskedThisRound = false;
@@ -99,14 +122,7 @@ namespace LakePlay.Pages
             }
             Repo.SaveChanges();
 
-            await LocalStorage!.SetItemAsync("CurrentRound", CurrentRound.ToString());
             StateHasChanged();
-        }
-
-
-        void OnQuestions()
-        {
-            NavManager!.NavigateTo("/questions");
         }
     }
 }

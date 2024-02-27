@@ -3,11 +3,49 @@
 
 <h3>Game Starting Shortly</h3>
 
-<img src="data:image/png;base64,@(GenerateQRCodeBase64(NavigationManager!.BaseUri))" alt="QR Code">
+<img src="data:image/png;base64,@(GenerateQRCodeBase64(NavManager!.BaseUri))" alt="QR Code">
 <button @onclick="OnStart">Start</button>
 @code {
     [Inject]
-    private NavigationManager? NavigationManager { get; set; }
+    Game? Game { get; set; }
+    [Inject]
+    Blazored.LocalStorage.ILocalStorageService? LocalStorage { get; set; }
+    [Inject]
+    LakePlayContext? Repo { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    private UserLogin? User { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                User = await UserLoginRepo!.Load();
+                if (LoginVerify!.VerifyLogin(User, true) == false)
+                {
+                    NavManager!.NavigateTo("/");
+                    return;
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
+        }
+    }
+
     private string GenerateQRCodeBase64(string text)
     {
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -20,6 +58,8 @@
     }
     private void OnStart()
     {
-        NavigationManager!.NavigateTo("/AdminRound");
+        Game!.PickNextQuestion();
+        NavManager!.NavigateTo("/AdminRound");
+        Game!.ChangeState(GameState.InRound);
     }
 }

@@ -18,6 +18,7 @@ builder.Configuration.AddAzureKeyVault(
     new DefaultAzureCredential());
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
+builder.Services.AddSingleton<Game>();
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddSingleton<LakePlayContext>();
 builder.Services.AddTransient<UserLoginRepo>();

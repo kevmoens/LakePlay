@@ -18,14 +18,15 @@
             </tr>
             <tr>
                 <td>Current Round</td>
-                <td><input type="number" @bind-value="CurrentRound" min="1" readonly /> </td>
+                <td><input type="number" @bind-value="Game!.CurrentRound" min="1" readonly /> </td>
             </tr>
         </table>
 
-        <button @onclick="OnResetRounds">Reset Rounds</button>
+        <button @onclick="OnResetGameStatus">Reset Game</button>
     </div>
     
 </div>
 
 <br/>
 <button @onclick="OnQuestions">Questions</button>
+<button @onclick="OnStartGame">Start Game</button>

@@ -1,0 +1,19 @@
+﻿@page "/adminround"
+
+<h3>AdminRound</h3>
+
+@inject Game Game
+<h3>Round</h3>
+Game: @Game.CurrentRound
+
+@if (Game.CurrentQuestion != null)
+{
+    <h3>Question</h3>
+    @Game!.CurrentQuestion?.Text
+
+    @foreach (var option in Game!.CurrentQuestion!.ListOptions)
+    {
+        <p>@option.Text</p>
+    }
+}
+
