@@ -1,0 +1,132 @@
+﻿@inject IJSRuntime JSRuntime
+<style>
+    /* top and bottom line */
+    .hex-item-outer div:nth-child(6) {
+        width: @hexOuterTBWidthString;
+    }
+
+    .hex-item-inner div:nth-child(6) {
+        width: @hexInnerTBWidthString;
+    }
+
+    .hex-item-outer div:nth-child(3) {
+        width: @hexOuterTBWidthString;
+    }
+
+    .hex-item-inner div:nth-child(3) {
+        width: @hexInnerTBWidthString;
+    }
+
+    /* > items */
+    .hex-item-outer div:nth-child(4) {
+        left: @hexOuterHorWidthString;
+    }
+
+    .hex-item-inner div:nth-child(4) {
+        left: @hexInnerHorWidthString;
+    }
+
+    .hex-item-outer div:nth-child(5) {
+        left: @hexOuterHorWidthString;
+    }
+
+    .hex-item-inner div:nth-child(5) {
+        left: @hexInnerHorWidthString;
+    }
+</style>
+
+<div class="hexagon-item @Class" style="@style">
+    <div class="hex-item hex-item-outer">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+@*    <div class="hex-item hex-item-inner">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>*@
+    <a class="hex-content">
+        <span class="hex-content-inner">
+            <span class="icon">
+                <i class="fa fa-universal-access"></i>
+            </span>
+            <span class="title">
+                @ChildContent
+            </span>
+        </span>
+        <svg viewBox="0 0 @elementWidth @hexBottom" width="@elementWidth" height="@hexBottom" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="@hexIndentLeft,@hexTop @hexIndentRight,@hexTop, @hexRight,@hexVertMiddle @hexIndentRight,@hexBottom, @hexIndentLeft, @hexBottom, @hexLeft,@hexVertMiddle"
+                     fill="var(--trivia-green)" />
+        </svg>
+    </a>
+</div>
+
+@code {
+    [Parameter]
+    public string? style { get; set; }
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    private int hexIndentLeft = 45;
+    private int hexIndentRight = 150;
+    private int hexLeft = 0;
+    private int hexRight = 200;
+    private int hexTop = 0;
+    private int hexVertMiddle = 88; //100;
+    private int hexBottom = 156; //200;
+    private int hexInnerWidth = 100;
+    private int hexOuterWidth = 110;
+    private string hexInnerWidthString = "100px";
+    private string hexOuterWidthString = "110px";
+    private string hexInnerTBWidthString = "100px";
+    private string hexOuterTBWidthString = "110px";
+    private string hexInnerHorWidthString = "100px";
+    private string hexOuterHorWidthString = "110px";
+
+    private int windowWidth;
+    private int windowHeight;
+
+    private int elementWidth = 200;
+
+    private string jsFunctionWidth = "getElementWidth";
+    private string jsFunctionHeight = "getElementHeight";
+    private string jsFunction = "handleWindowResize";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync(jsFunction, DotNetObjectReference.Create(this));
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public async Task UpdateWindowSize(int width, int height)
+    {
+        windowWidth = width;
+        windowHeight = height;
+        elementWidth = await JSRuntime.InvokeAsync<int>(jsFunctionWidth, "hexagon-item");
+        hexIndentRight = elementWidth - hexIndentLeft;
+        hexRight = elementWidth;
+        hexBottom = await JSRuntime.InvokeAsync<int>(jsFunctionHeight, "hexagon-item");
+        hexVertMiddle = hexBottom / 2;
+        hexInnerWidth = elementWidth - 90;
+        hexInnerWidthString = $"{hexInnerWidth}px";
+        hexInnerTBWidthString = $"{hexInnerWidth + 8}px";
+        hexInnerHorWidthString = $"{hexInnerWidth - 92}px";
+        hexOuterWidth = elementWidth - 90;
+        hexOuterWidthString = $"{hexInnerWidth}px";
+        hexOuterTBWidthString = $"{hexInnerWidth + 8}px";
+        hexOuterHorWidthString = $"{hexInnerWidth - 92}px";
+        StateHasChanged();
+    }
+}

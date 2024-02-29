@@ -73,7 +73,7 @@ namespace LakePlay.Data
                 case GameState.InRound:
                     return "/adminround";
                 case GameState.Meme:
-                    return "/adminmeme";
+                    return "/adminresult";
                 case GameState.Leaderboard:
                     return "/adminleaderboard";
                 case GameState.GameOver:
@@ -83,18 +83,18 @@ namespace LakePlay.Data
             }
         }
 
-        public void PickNextQuestion()
+        public bool PickNextQuestion()
         {
             var questions = _triviaQuestions.Where(q => q.Used == false && q.AskedThisRound == false).ToList();
             if (questions.Count == 0)
             {
-
-                return;
+                return false;
             }
             var rnd = new Random();
             var question = questions[rnd.Next(questions.Count)];
             question.AskedThisRound = true;
             CurrentQuestion = question;
+            return true;
         }
     }
 }

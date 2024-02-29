@@ -1,0 +1,48 @@
+﻿h2 {
+    color: var(--foreground-color);
+}
+
+h3 {
+    color: var(--foreground-color);
+}
+
+h4 {
+    color: var(--foreground-color);
+}
+
+.player-area {
+    height: 100%;
+}
+
+.hover-option-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    align-content: start;
+}
+
+.hover-option-item {
+    flex: 0 1 calc(40% - 15px);
+    height: 173px;
+    width: 300px;
+    margin: 15px;
+}
+
+.hover-option-item-full {
+    flex: 1 1 100%;
+    height: 173px;
+    width: 300px;
+    margin: 15px;
+}
+
+.question-image-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        ". .";
+}

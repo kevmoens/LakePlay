@@ -115,9 +115,10 @@ namespace LakePlay.Pages
             Game!.ChangeState(GameState.NotSet);
 
             Game.CurrentRound = 1;
-            foreach (var question in Repo!.Questions!.Where(q => q.AskedThisRound == true))
+            foreach (var question in Repo!.Questions!.Where(q => q.AskedThisRound == true || q.Used == true))
             {
                 question.AskedThisRound = false;
+                question.Used = false;
                 Repo.Questions!.Update(question);
             }
             Repo.SaveChanges();

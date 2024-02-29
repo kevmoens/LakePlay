@@ -1,0 +1,20 @@
+﻿@page "/adminleaderboard"
+@inject NavigationManager navMan
+@inject Game Game
+<h3>Leader Board</h3>
+
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Task.Delay(4000);
+        if (Game!.PickNextQuestion())
+        {
+            navMan.NavigateTo("/AdminRound");
+            Game!.ChangeState(GameState.InRound);
+            return;
+        }
+        Game!.ChangeState(GameState.GameOver);
+        navMan.NavigateTo("/AdminEnd");
+    }
+}

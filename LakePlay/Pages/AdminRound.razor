@@ -1,7 +1,7 @@
 ﻿@page "/adminround"
 
 <h3>AdminRound</h3>
-
+@inject NavigationManager navMan
 @inject Game Game
 <h3>Round</h3>
 Game: @Game.CurrentRound
@@ -15,5 +15,59 @@ Game: @Game.CurrentRound
     {
         <p>@option.Text</p>
     }
+
+
+
+    @foreach (int row in rows)
+    {
+        <div class="hover-option-container">
+            <div class="hover-option-item" @onclick="()=> OnSelectedChoice(Game!.CurrentQuestion!.ListOptions[row * 2])">
+                <HoverButton style="width:100%">
+                    @Game!.CurrentQuestion!.ListOptions[(row * 2)].Text
+                </HoverButton>
+            </div>
+            @if (Game!.CurrentQuestion!.ListOptions.Count > row * 2 + 1)
+            {
+                <div class="hover-option-item" @onclick="()=> OnSelectedChoice(Game!.CurrentQuestion!.ListOptions[row * 2 + 1])">
+                    <HoverButton style="width:100%">
+                        @Game!.CurrentQuestion!.ListOptions[(row * 2) + 1].Text
+                    </HoverButton>
+                </div>
+            }
+        </div>
+    }
+
 }
 
+@code {
+
+    private List<int> rows = new();
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender == false)
+        {
+            return;
+        }
+
+        rows.Clear();
+        for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
+        {
+            rows.Add(i);
+        }
+        StateHasChanged();
+    }
+    void OnSelectedChoice(TriviaQuestionOption option)
+    {
+
+        Game!.ChangeState(GameState.Meme);
+        Game!.CurrentQuestion!.AskedThisRound = true;
+        Game!.CurrentQuestion!.Used = true;
+        if (option.IsAnswer)
+        {
+            //Calculate the time it took to answer and add to the score
+        }
+
+
+        navMan.NavigateTo($"/AdminResult/{option.IsAnswer}");
+    }
+}

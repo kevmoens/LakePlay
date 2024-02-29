@@ -1,0 +1,44 @@
+﻿@page "/adminresult/{isCorrect:bool}"
+
+@inject NavigationManager navMan
+@inject Game Game
+<h3>Result</h3>
+
+<div class="image-container">
+
+    <img class="image-result" src="@ImageUrl" />
+    <div class="center-result blinker">
+        @Message
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public bool isCorrect { get; set; }
+    public string? ImageUrl { get; set; }
+    private string Message { get; set; } = "CORRECT";
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Random random = new Random();
+            int i = random.Next(1, 4);
+            if (isCorrect)
+            {
+                ImageUrl = $"Correct{i}.jpg";
+            }
+            else
+            {
+                ImageUrl = $"Wrong{i}.jpg";
+                Message = "WRONG";
+            }
+            StateHasChanged();
+            }
+            await Task.Delay(4000);
+
+            Game!.ChangeState(GameState.Leaderboard);
+            navMan.NavigateTo("/AdminLeaderBoard");
+        }
+    }
+
+}
