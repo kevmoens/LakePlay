@@ -79,7 +79,7 @@ else
                         <a href='/questions/edit/@quest.Id' class="btn btn-outline-dark" role="button">
                             Edit
                         </a>
-                        <a href='/questions/delete/@quest.Id' class="btn btn-outline-danger" role="button">
+                        <a href='/questions' @onclick="async () => await OnDelete(quest.Id)" class="btn btn-outline-danger" role="button">
                             Delete
                         </a>
                     </td>

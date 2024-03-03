@@ -17,8 +17,6 @@ namespace LakePlay.Pages
         [Inject]
         Blazored.LocalStorage.ILocalStorageService? LocalStorage { get; set; }
         [Inject]
-        LakePlayContext? Repo { get; set; }
-        [Inject]
         JsConsole? JsConsole { get; set; }
         [Inject]
         NavigationManager? NavManager { get; set; }
@@ -33,8 +31,9 @@ namespace LakePlay.Pages
 
         [Inject]
         List<TriviaQuestion>? GameQuestions { get; set; }
+
         [Inject]
-        LakePlayContext? DbContext { get; set; }
+        ILakePlayRepo<TriviaQuestion>? QuestionRepo { get; set; }
 
         private UserLogin? User { get; set; }
 
@@ -66,9 +65,9 @@ namespace LakePlay.Pages
                         return;
                     }
 
-                    if (GameQuestions!.Count == 0 && DbContext?.Questions != null)
+                    if (GameQuestions!.Count == 0 && QuestionRepo != null)
                     {
-                        var questions = await DbContext.Questions.ToListAsync();
+                        var questions = await QuestionRepo.LoadAllAsync();
                         GameQuestions.AddRange(questions);
                     }
                     StateHasChanged();
@@ -110,18 +109,18 @@ namespace LakePlay.Pages
             Game!.ChangeState(GameState.AboutToStart);
             NavManager!.NavigateTo("/adminintro");
         }
-        void OnResetGameStatus()
+        async void OnResetGameStatus()
         {
             Game!.ChangeState(GameState.NotSet);
 
             Game.CurrentRound = 1;
-            foreach (var question in Repo!.Questions!.Where(q => q.AskedThisRound == true || q.Used == true))
+            foreach (var question in await QuestionRepo!.Where(q => q.AskedThisRound == true || q.Used == true))
             {
                 question.AskedThisRound = false;
                 question.Used = false;
-                Repo.Questions!.Update(question);
+                QuestionRepo!.Update(question);
             }
-            Repo.SaveChanges();
+            await QuestionRepo.SaveAsync();
 
             StateHasChanged();
         }

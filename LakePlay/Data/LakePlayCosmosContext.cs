@@ -2,11 +2,11 @@
 
 namespace LakePlay.Data
 {
-    public class LakePlayContext : DbContext
+    public class LakePlayCosmosContext : DbContext
     {
         private readonly IConfiguration _configuration;
 
-        public LakePlayContext(IConfiguration configuration)
+        public LakePlayCosmosContext(IConfiguration configuration)
         {
             _configuration = configuration;
         }

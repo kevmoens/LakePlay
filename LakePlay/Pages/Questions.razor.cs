@@ -19,7 +19,7 @@ namespace LakePlay.Pages
         public IJSRuntime? JSRuntime { get; set;  }
 
         [Inject]
-        public LakePlayContext? Context { get; set; }
+        ILakePlayRepo<TriviaQuestion>? QuestionRepo { get; set; }
 
         [Inject]
         LoginVerification? LoginVerify { get; set; }
@@ -79,7 +79,7 @@ namespace LakePlay.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            searchQuestionData = await Context!.Questions!.ToListAsync();
+            searchQuestionData = await QuestionRepo!.LoadAllAsync();
             questionList = searchQuestionData;
         }
 
@@ -108,9 +108,21 @@ namespace LakePlay.Pages
         async Task OnUnused(TriviaQuestion question)
         {
             question.Used = false;
-            Context!.Questions!.Update(question);
-            await Context!.SaveChangesAsync();
+            QuestionRepo!.Update(question);
+            await QuestionRepo!.SaveAsync();
             StateHasChanged();
+        }
+        async Task OnDelete(string Id)
+        {
+            var question = await QuestionRepo!.Where(q => q.Id == Id);
+            if (question.Count > 0)
+            {
+                QuestionRepo!.Remove(question[0]);
+                await QuestionRepo!.SaveAsync();
+                searchQuestionData = await QuestionRepo!.LoadAllAsync();
+                questionList = searchQuestionData;
+                StateHasChanged();
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 @inject Hub hub;
 @inject List<TriviaQuestion> gameQuestions;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
-@inject LakePlayContext dbContext;
+@inject ILakePlayRepo<TriviaQuestion> QuestionRepo;
 @inject JsConsole jsConsole;
 @inject IConfiguration configuration
 
@@ -37,9 +37,9 @@ Change this to a logon screen.
         if (firstRender)
             try
             {
-                if (gameQuestions.Count == 0 && dbContext?.Questions != null)
+                if (gameQuestions.Count == 0 && QuestionRepo!= null)
                 {
-                    var questions = await dbContext.Questions.ToListAsync();
+                    var questions = await QuestionRepo.LoadAllAsync();
                     gameQuestions.AddRange(questions);
                 }
                 hub.Subscribe<TriviaQuestionOption>(OnTriviaRefresh);

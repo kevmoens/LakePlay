@@ -5,6 +5,7 @@ using LakePlay.Data.Login;
 using LakePlay.WebUtil;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 using PubSub;
 using System.Collections.Concurrent;
 
@@ -20,10 +21,18 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
 builder.Services.AddSingleton<Game>();
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
-builder.Services.AddSingleton<LakePlayContext>();
 builder.Services.AddTransient<UserLoginRepo>();
 builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<LakePlayCosmosContext>();
+    builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlayCosmosRepo>();
+} else
+{
+    builder.Services.AddDbContext<LakePlaySqliteContext>(options => options.UseSqlite("LakePlay.sqlite"));
+    builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlaySqliteRepo>();
+}
 
 builder.Services.AddSingleton<Hub>(Hub.Default);
 var app = builder.Build();

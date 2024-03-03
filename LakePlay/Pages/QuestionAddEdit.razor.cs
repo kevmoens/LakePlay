@@ -19,8 +19,9 @@ namespace LakePlay.Pages
         [Inject]
         public IJSRuntime? JSRuntime { get; set; }
 
+
         [Inject]
-        public LakePlayContext? Context { get; set; }
+        ILakePlayRepo<TriviaQuestion>? QuestionRepo { get; set; }
 
         [Inject]
         LoginVerification? LoginVerify { get; set; }
@@ -84,7 +85,7 @@ namespace LakePlay.Pages
             if (string.IsNullOrEmpty(QuestionId) == false)
             {
                 Title = "Edit";
-                var qs = await Context!.Questions!.Where(q => q.Id == QuestionId).ToListAsync();
+                var qs = await QuestionRepo!.Where(q => q.Id == QuestionId);
                 if (qs.Count > 0)
                 {
                     question = qs[0];
@@ -110,16 +111,23 @@ namespace LakePlay.Pages
         }
         protected async Task SaveQuestion()
         {
-            if (string.IsNullOrEmpty(QuestionId) == false)
-            {
-                Context!.Questions!.Update(question);              
+
+            try { 
+                if (string.IsNullOrEmpty(QuestionId) == false)
+                {
+                    QuestionRepo!.Update(question);              
+                }
+                else
+                {
+                    QuestionRepo!.Add(question);
+                }
+                await QuestionRepo!.SaveAsync();
+                Cancel();
             }
-            else
+            catch (Exception ex)
             {
-                Context!.Questions!.Add(question);
+                await JsConsole!.LogAsync(ex.Message);
             }
-            await Context!.SaveChangesAsync();
-            Cancel();
         }
 
         public void Cancel()
