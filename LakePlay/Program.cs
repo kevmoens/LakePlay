@@ -14,9 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Configuration.AddAzureKeyVault(
-    new Uri("https://lakeplaystore.vault.azure.net/"),
-    new DefaultAzureCredential());
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
 builder.Services.AddSingleton<Game>();
@@ -26,6 +23,9 @@ builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
 if (!builder.Environment.IsDevelopment())
 {
+    builder.Configuration.AddAzureKeyVault(
+        new Uri("https://lakeplaystore.vault.azure.net/"),
+        new DefaultAzureCredential());
     builder.Services.AddSingleton<LakePlayCosmosContext>();
     builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlayCosmosRepo>();
 } else
