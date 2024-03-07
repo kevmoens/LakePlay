@@ -1,4 +1,15 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+
+:root {
+    --trivia-green: #203731;
+    --trivia-yellow: #ffb612;
+    --background-yellow: #ffc833;
+    --foreground-color: #000000;
+    --foreground-button: #ffffff;
+}
+
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;

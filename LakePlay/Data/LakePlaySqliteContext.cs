@@ -11,7 +11,7 @@ namespace LakePlay.Data
         public DbSet<TriviaQuestion>? Questions { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string path = @"TimeOff.sqlite";
+            string path = @"LakePlay.sqlite";
             optionsBuilder.UseSqlite(
                 $"data source={path}");
         }

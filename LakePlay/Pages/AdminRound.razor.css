@@ -46,3 +46,7 @@ h4 {
     grid-template-areas:
         ". .";
 }
+
+.scoreboard-font {
+    font-family: 'Press Start 2P', sans-serif;
+}

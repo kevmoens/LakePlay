@@ -33,12 +33,11 @@
                 Message = "WRONG";
             }
             StateHasChanged();
-            }
-            await Task.Delay(4000);
+            
+            await Task.Delay(10000);
 
             Game!.ChangeState(GameState.Leaderboard);
             navMan.NavigateTo("/AdminLeaderBoard");
         }
     }
-
 }

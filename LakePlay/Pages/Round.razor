@@ -8,9 +8,40 @@ Game: @Game.CurrentRound
     <h3>Question</h3>
     @Game!.CurrentQuestion?.Text
 
-    @foreach (var option in Game!.CurrentQuestion!.ListOptions)
+    @if (rows.Count > 0)
     {
-        <p>@option.Text</p>
+
+        @foreach (int row in rows)
+        {
+            <div class="hover-option-container">
+                <div class="hover-option-item" @onclick="()=> OnSelectedChoice(Game!.CurrentQuestion!.ListOptions[row * 2])">
+                    <HoverButton style="width:100%">
+                        @Game!.CurrentQuestion!.ListOptions[(row * 2)].Text
+                    </HoverButton>
+                </div>
+                @if (Game!.CurrentQuestion!.ListOptions.Count > row * 2 + 1)
+                {
+                    <div class="hover-option-item" @onclick="()=> OnSelectedChoice(Game!.CurrentQuestion!.ListOptions[row * 2 + 1])">
+                        <HoverButton style="width:100%">
+                            @Game!.CurrentQuestion!.ListOptions[(row * 2) + 1].Text
+                        </HoverButton>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        @foreach (var option in Game!.CurrentQuestion!.ListOptions)
+        {
+            @if (@option.Text == @selected)
+            {
+                <p><b>@option.Text</b></p>
+            } else 
+            {                
+                <p>@option.Text</p>
+            }
+        }
     }
 }
 
@@ -18,4 +49,30 @@ Game: @Game.CurrentRound
 
 @code {
 
+    private List<int> rows = new();
+    private string selected = string.Empty;
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender == false)
+        {
+            return;
+        }
+
+        rows.Clear();
+        for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
+        {
+            rows.Add(i);
+        }
+        StateHasChanged();
+    }
+    void OnSelectedChoice(TriviaQuestionOption option)
+    {
+
+        if (option.IsAnswer)
+        {
+            //Calculate the time it took to answer and add to the score
+        }
+        selected = option.Text;
+        rows.Clear();
+    }
 }

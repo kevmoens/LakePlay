@@ -364,3 +364,6 @@ FodyWeavers.xsd
 /LakePlay/TimeOff.sqlite
 /LakePlay/TimeOff.sqlite-shm
 /LakePlay/TimeOff.sqlite-wal
+/LakePlay/LakePlay.sqlite
+/LakePlay/LakePlay.sqlite-shm
+/LakePlay/LakePlay.sqlite-wal

@@ -7,7 +7,7 @@
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Task.Delay(4000);
+        await Task.Delay(8000);
         if (Game!.PickNextQuestion())
         {
             navMan.NavigateTo("/AdminRound");

@@ -63,7 +63,7 @@
         </span>
         <svg viewBox="0 0 @elementWidth @hexBottom" width="@elementWidth" height="@hexBottom" xmlns="http://www.w3.org/2000/svg">
             <polygon points="@hexIndentLeft,@hexTop @hexIndentRight,@hexTop, @hexRight,@hexVertMiddle @hexIndentRight,@hexBottom, @hexIndentLeft, @hexBottom, @hexLeft,@hexVertMiddle"
-                     fill="var(--trivia-green)" />
+                     fill="@Color" />
         </svg>
     </a>
 </div>
@@ -73,6 +73,9 @@
     public string? style { get; set; }
     [Parameter]
     public string Class { get; set; } = string.Empty;
+
+    [Parameter]
+        public string Color { get; set; } = "var(--trivia-green)";
     [Parameter]
     public RenderFragment ChildContent { get; set; }
     private int hexIndentLeft = 45;

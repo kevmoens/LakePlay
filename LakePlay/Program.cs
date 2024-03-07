@@ -21,17 +21,17 @@ builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddTransient<UserLoginRepo>();
 builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
-if (!builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDbContext<LakePlaySqliteContext>(options => options.UseSqlite("LakePlay.sqlite"));
+    builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlaySqliteRepo>();
+} else
 {
     builder.Configuration.AddAzureKeyVault(
         new Uri("https://lakeplaystore.vault.azure.net/"),
         new DefaultAzureCredential());
     builder.Services.AddSingleton<LakePlayCosmosContext>();
     builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlayCosmosRepo>();
-} else
-{
-    builder.Services.AddDbContext<LakePlaySqliteContext>(options => options.UseSqlite("LakePlay.sqlite"));
-    builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlaySqliteRepo>();
 }
 
 builder.Services.AddSingleton<Hub>(Hub.Default);
