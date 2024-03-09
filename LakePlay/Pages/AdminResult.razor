@@ -1,7 +1,6 @@
 ﻿@page "/adminresult/{isCorrect:bool}"
 
-@inject NavigationManager navMan
-@inject Game Game
+
 <h3>Result</h3>
 
 <div class="image-container">
@@ -13,6 +12,23 @@
 </div>
 
 @code {
+
+    [Inject]
+    Game? Game { get; set; }
+    [Inject]
+    Blazored.LocalStorage.ILocalStorageService? LocalStorage { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    private UserLogin? User { get; set; }
+
     [Parameter]
     public bool isCorrect { get; set; }
     public string? ImageUrl { get; set; }
@@ -21,6 +37,15 @@
     {
         if (firstRender)
         {
+
+            User = await UserLoginRepo!.Load();
+            if (LoginVerify!.VerifyLogin(User, true) == false)
+            {
+                NavManager!.NavigateTo("/");
+                return;
+            }
+            StateHasChanged();
+
             Random random = new Random();
             int i = random.Next(1, 4);
             if (isCorrect)
@@ -37,7 +62,8 @@
             await Task.Delay(10000);
 
             Game!.ChangeState(GameState.Leaderboard);
-            navMan.NavigateTo("/AdminLeaderBoard");
+            NavManager!.NavigateTo("/AdminLeaderBoard");
         }
     }
+
 }

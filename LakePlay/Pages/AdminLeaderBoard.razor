@@ -1,20 +1,70 @@
 ﻿@page "/adminleaderboard"
 @inject NavigationManager navMan
-@inject Game Game
-<h3>Leader Board</h3>
-
+<h3>Leaderboard</h3>
+@if (Game != null)
+{
+    <table>
+        <tr>
+            <th>Player</th>
+            <th>Score</th>
+        </tr>
+        @foreach (var user in Game!.Players.OrderByDescending(x => x.Value.Score))
+        {
+            <tr>
+                <td>@user.Value.UserName</td>
+                <td>@user.Value.Score</td>
+            </tr>
+        }
+    </table>
+}
 
 @code {
+    [Inject]
+    Game? Game { get; set; }
+    [Inject]
+    Blazored.LocalStorage.ILocalStorageService? LocalStorage { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    private UserLogin? User { get; set; }
+
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Task.Delay(8000);
-        if (Game!.PickNextQuestion())
+        if (firstRender)
         {
-            navMan.NavigateTo("/AdminRound");
-            Game!.ChangeState(GameState.InRound);
-            return;
+            try
+            {
+                User = await UserLoginRepo!.Load();
+                if (LoginVerify!.VerifyLogin(User, true) == false)
+                {
+                    NavManager!.NavigateTo("/");
+                    return;
+                }
+                StateHasChanged();
+
+                await Task.Delay(8000);
+                if (Game!.PickNextQuestion())
+                {
+                    navMan.NavigateTo("/AdminRound");
+                    Game!.ChangeState(GameState.InRound);
+                    return;
+                }
+                Game!.ChangeState(GameState.GameOver);
+                navMan.NavigateTo("/AdminEnd");
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
         }
-        Game!.ChangeState(GameState.GameOver);
-        navMan.NavigateTo("/AdminEnd");
     }
 }

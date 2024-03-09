@@ -1,6 +1,87 @@
 ﻿@page "/adminend"
+@page "/admingameover"
 <h3>AdminEnd</h3>
 
+<h1>@WinnerLabel</h1>
+@if (Winners.Count > 0)
+{
+    <table>
+        <tr>
+            <th>Player</th>
+            <th>Score</th>
+        </tr>
+        @foreach (var winner in Winners)
+        {
+            <tr>
+                <td>@winner.UserName</td>
+                <td>@winner.Score</td>
+            </tr>
+        }
+    </table>
+}
 @code {
+
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    [Inject]
+    Game? Game { get; set; }
+    [Inject]
+    Hub? Hub { get; set; }
+    private UserLogin? User { get; set; }
+
+    private List<PlayerStats> Winners = new();
+    string WinnerLabel = "Winner";
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            try
+            {
+                User = await UserLoginRepo!.Load();
+                if (LoginVerify!.VerifyLogin(User, true) == false)
+                {
+                    NavManager!.NavigateTo("/");
+                    return;
+                }
+                StateHasChanged();
+
+                var navigateLocation = Game!.CheckForNavigateLocation(true, GameState.GameOver);
+                if (navigateLocation != "")
+                {
+                    NavManager!.NavigateTo(navigateLocation);
+                    return;
+                }
+                Hub!.Subscribe<GameStateChanged>((message) =>
+                {
+                    var navigateLocation = Game!.CheckForNavigateLocation(true, GameState.GameOver);
+                    if (navigateLocation != "")
+                    {
+                        NavManager!.NavigateTo(navigateLocation);
+                    }
+                });
+
+                int maxScore = Game!.Players.Values.Max(player => player.Score);
+                Winners = Game!.Players.Values.Where(player => player.Score == maxScore).ToList();
+                if (Winners.Count > 1)
+                {
+                    WinnerLabel = "Winners";
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
+        }
+    }
 
 }

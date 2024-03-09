@@ -1,10 +1,11 @@
 ﻿using PubSub;
+using System.Collections.Concurrent;
 
 namespace LakePlay.Data
 {
     public class Game
     {
-        private Hub _hub;
+        private readonly Hub _hub;
         private readonly List<TriviaQuestion> _triviaQuestions;
 
         public Game(Hub hub, List<TriviaQuestion> triviaQuestions)
@@ -17,6 +18,7 @@ namespace LakePlay.Data
         public int CurrentRound { get; set; }
         public int NumberOfRounds { get; set; }
         public TriviaQuestion? CurrentQuestion { get; set; }
+        public ConcurrentDictionary<string, PlayerStats> Players { get; set; } = new ConcurrentDictionary<string, PlayerStats>(StringComparer.InvariantCultureIgnoreCase);
 
         public void ChangeState(GameState newState)
         {
@@ -39,23 +41,16 @@ namespace LakePlay.Data
             {
                 return ""; //Do Nothing and stay on the same page
             }
-            switch (State)
+            return State switch
             {
-                case GameState.NotSet:
-                    return "";
-                case GameState.AboutToStart:
-                    return "/waiting";
-                case GameState.InRound:
-                    return "/round";
-                case GameState.Meme:
-                    return "/meme";
-                case GameState.Leaderboard:
-                    return "/leaderboard";
-                case GameState.GameOver:
-                    return "/gameover";
-                default:
-                    return "";
-            }
+                GameState.NotSet => "",
+                GameState.AboutToStart => "/waiting",
+                GameState.InRound => "/round",
+                GameState.Meme => "/meme",
+                GameState.Leaderboard => "/leaderboard",
+                GameState.GameOver => "/gameover",
+                _ => "",
+            };
         }
 
         private string CheckForNavigateLocationAdmin(GameState currentLocation)
@@ -64,23 +59,16 @@ namespace LakePlay.Data
             {
                 return ""; //Do Nothing and stay on the same page
             }
-            switch (currentLocation)
+            return currentLocation switch
             {
-                case GameState.NotSet:
-                    return "/admin";
-                case GameState.AboutToStart:
-                    return "/adminintro";
-                case GameState.InRound:
-                    return "/adminround";
-                case GameState.Meme:
-                    return "/adminresult";
-                case GameState.Leaderboard:
-                    return "/adminleaderboard";
-                case GameState.GameOver:
-                    return "/admingameover";
-                default:
-                    return "";
-            }
+                GameState.NotSet => "/admin",
+                GameState.AboutToStart => "/adminintro",
+                GameState.InRound => "/adminround",
+                GameState.Meme => "/adminresult",
+                GameState.Leaderboard => "/adminleaderboard",
+                GameState.GameOver => "/admingameover",
+                _ => "",
+            };
         }
 
         public bool PickNextQuestion()
@@ -94,7 +82,13 @@ namespace LakePlay.Data
             var question = questions[rnd.Next(questions.Count)];
             question.AskedThisRound = true;
             CurrentQuestion = question;
+            CurrentRound++;
             return true;
+        }
+        public void Reset()
+        {
+            CurrentRound = 1;
+            Players.Clear();
         }
     }
 }

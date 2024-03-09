@@ -2,9 +2,9 @@
 
 <h3>AdminRound</h3>
 @inject NavigationManager navMan
-@inject Game Game
+@inject Countdown Countdown
 <h3>Round</h3>
-Game: @Game.CurrentRound
+Game: @Game!.CurrentRound
 
 @if (Game.CurrentQuestion != null)
 {
@@ -13,7 +13,7 @@ Game: @Game.CurrentRound
 
 
     <h3>Timer</h3>
-    <p class="scoreboard-font">@timerCountdown</p>
+    <p class="scoreboard-font">@Countdown.Counter</p>
 
     @foreach (int row in rows)
     {
@@ -37,17 +37,43 @@ Game: @Game.CurrentRound
 }
 
 @code {
+
+
+    [Inject]
+    Game? Game { get; set; }
+    [Inject]
+    Blazored.LocalStorage.ILocalStorageService? LocalStorage { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    private UserLogin? User { get; set; }
+
+
     private bool isCorrect = false;
     private TriviaQuestionOption? selectedOption = null;
     private List<int> rows = new();
-    private int timerCountdown = 60; // 5 minutes in seconds
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender == false)
         {
             return;
         }
+
+        User = await UserLoginRepo!.Load();
+        if (LoginVerify!.VerifyLogin(User, true) == false)
+        {
+            NavManager!.NavigateTo("/");
+            return;
+        }
+        StateHasChanged();
 
         rows.Clear();
         for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
@@ -61,20 +87,21 @@ Game: @Game.CurrentRound
 
     private async void StartTimer()
     {
-        while (timerCountdown > 0)
+        Interlocked.Exchange(ref Countdown.Counter, 1000);
+        while (Countdown.Counter > 0)
         {
-            await Task.Delay(1000); // Delay for 1 second
-            timerCountdown--;
+            await Task.Delay(60); // Delay for 1 minute
+            Interlocked.Decrement(ref Countdown.Counter);
             StateHasChanged();
         }
 
         // Timer is done, navigate to AdminResult
+        Game!.ChangeState(GameState.Meme);
         navMan.NavigateTo($"/AdminResult/{isCorrect}");
     }
 
     void OnSelectedChoice(TriviaQuestionOption option)
     {
-        Game!.ChangeState(GameState.Meme);
         Game!.CurrentQuestion!.AskedThisRound = true;
         Game!.CurrentQuestion!.Used = true;
         if (option.IsAnswer)

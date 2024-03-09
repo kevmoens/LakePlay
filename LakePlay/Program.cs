@@ -17,6 +17,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddSingleton<List<TriviaQuestion>>();
 builder.Services.AddSingleton<Game>();
+builder.Services.AddSingleton<Countdown>();
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddTransient<UserLoginRepo>();
 builder.Services.AddTransient<LoginVerification>();

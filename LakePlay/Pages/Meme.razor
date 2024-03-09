@@ -1,6 +1,98 @@
 ﻿@page "/meme"
 <h3>Meme</h3>
 
+<div class="image-container">
+
+    <img class="image-result" src="@ImageUrl" />
+    <div class="center-result blinker">
+        @Message
+    </div>
+    <div>
+        @player.Score
+    </div>
+</div>
 @code {
+
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    [Inject]
+    Game? Game { get; set; }
+    [Inject]
+    Hub? Hub { get; set; }
+    private UserLogin? User { get; set; }
+    private PlayerStats? player { get; set; }
+
+    public string? ImageUrl { get; set; }
+    private string Message { get; set; } = "CORRECT";
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            try
+            {
+                User = await UserLoginRepo!.Load();
+                if (LoginVerify!.VerifyLogin(User, false) == false)
+                {
+                    NavManager!.NavigateTo("/");
+                    return;
+                }
+                StateHasChanged();
+
+                var navigateLocation = Game!.CheckForNavigateLocation(false, GameState.Meme);
+                if (navigateLocation != "")
+                {
+                    NavManager!.NavigateTo(navigateLocation);
+                    return;
+                }
+                Hub!.Subscribe<GameStateChanged>((message) =>
+                {
+                    var navigateLocation = Game!.CheckForNavigateLocation(false, GameState.Meme);
+                    if (navigateLocation != "")
+                    {
+                        NavManager!.NavigateTo(navigateLocation);
+                    }
+                });
+
+
+                if (Game!.Players.ContainsKey(User.Email) == false)
+                {
+                    return;
+                }
+                player = Game!.Players[User.Email];
+                if (player.RoundScores.ContainsKey(Game!.CurrentRound) == false)
+                {
+                    return;
+                }
+                var roundScore = player.RoundScores[Game!.CurrentRound];
+                Random random = new Random();
+                int i = random.Next(1, 4);
+                if (roundScore > 0)
+                {
+                    ImageUrl = $"Correct{i}.jpg";
+                }
+                else
+                {
+                    ImageUrl = $"Wrong{i}.jpg";
+                    Message = "WRONG";
+                }
+                StateHasChanged();
+
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
+        }
+    }
+
 
 }

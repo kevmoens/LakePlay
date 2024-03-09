@@ -1,5 +1,4 @@
 ﻿@page "/round"
-@inject Game Game
 <h3>Round</h3>
 Game: @Game.CurrentRound
 
@@ -49,13 +48,61 @@ Game: @Game.CurrentRound
 
 @code {
 
+    [Inject]
+    NavigationManager? NavManager { get; set; }
+    [Inject]
+    ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+    [Inject]
+    JsConsole? JsConsole { get; set; }
+    [Inject]
+    LoginVerification? LoginVerify { get; set; }
+    [Inject]
+    UserLoginRepo? UserLoginRepo { get; set; }
+    [Inject]
+    Game? Game { get; set; }
+
+    [Inject] 
+    Countdown? Countdown { get; set; }
+    [Inject]
+    Hub? Hub { get; set; }
+    private UserLogin? User { get; set; }
     private List<int> rows = new();
     private string selected = string.Empty;
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender == false)
         {
             return;
+        }
+
+        try
+        {
+            User = await UserLoginRepo!.Load();
+            if (LoginVerify!.VerifyLogin(User, false) == false)
+            {
+                NavManager!.NavigateTo("/");
+                return;
+            }
+            StateHasChanged();
+
+            var navigateLocation = Game!.CheckForNavigateLocation(false, GameState.InRound);
+            if (navigateLocation != "" && navigateLocation != "/round")
+            {
+                NavManager!.NavigateTo(navigateLocation);
+                return;
+            }
+            Hub!.Subscribe<GameStateChanged>((message) =>
+            {
+                var navigateLocation = Game!.CheckForNavigateLocation(false, GameState.InRound);
+                if (navigateLocation != "")
+                {
+                    NavManager!.NavigateTo(navigateLocation);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            await JsConsole!.LogAsync(ex.Message);
         }
 
         rows.Clear();
@@ -65,13 +112,31 @@ Game: @Game.CurrentRound
         }
         StateHasChanged();
     }
+
     void OnSelectedChoice(TriviaQuestionOption option)
     {
-
+        int roundScore = 0;
         if (option.IsAnswer)
         {
-            //Calculate the time it took to answer and add to the score
+            roundScore = Countdown!.Counter;
         }
+        //Calculate the time it took to answer and add to the score
+        var stat = new PlayerStats()
+            {
+                Email = User!.Email,
+                UserName = User!.UserName,
+                Score = roundScore
+            };
+
+        Game!.Players.AddOrUpdate(
+            User.Email,
+            (key) => stat,
+            (key, existingVal) =>
+                {
+                    existingVal.AddScore(Game!.CurrentRound, Countdown!.Counter);
+                    return existingVal;
+                }
+        );
         selected = option.Text;
         rows.Clear();
     }
