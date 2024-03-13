@@ -114,27 +114,18 @@ namespace LakePlay.Pages
         {
             try
             {
-                await JsConsole!.LogAsync("OnResetGameStatus START");
                 Game!.ChangeState(GameState.NotSet);
 
-                await JsConsole!.LogAsync("Before QuestionRepo");
-                if (QuestionRepo == null)
-                {
-                    await JsConsole!.LogAsync("QuestionRepo is null");
-                }
                 Game.CurrentRound = 1;
                 foreach (var question in await QuestionRepo!.Where(q => q.AskedThisRound == true || q.Used == true))
                 {
-                    await JsConsole!.LogAsync("Update question");
                     question.AskedThisRound = false;
                     question.Used = false;
                     QuestionRepo!.Update(question);
                 }
 
-                await JsConsole!.LogAsync("Before SaveAsync");
                 await QuestionRepo.SaveAsync();
 
-                await JsConsole!.LogAsync("StateHasChanged()");
                 StateHasChanged();
             }
             catch (Exception ex)

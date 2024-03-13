@@ -67,37 +67,29 @@ Game: @Game!.CurrentRound
             return;
         }
 
-        await JsConsole!.LogAsync("OnAfterRenderAsync Start");
         User = await UserLoginRepo!.Load();
 
-        await JsConsole!.LogAsync("After UserLoginRepo.Load");
         if (LoginVerify!.VerifyLogin(User, true) == false)
         {
             NavManager!.NavigateTo("/");
             return;
         }
 
-        await JsConsole!.LogAsync("After VerifyLogin");
         StateHasChanged();
 
-        await JsConsole!.LogAsync("rows.Clear()");
         rows.Clear();
 
-        await JsConsole!.LogAsync($"ListOptions.Count {Game?.CurrentQuestion?.ListOptions?.Count}");
         for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
         {
-            await JsConsole!.LogAsync("rows.Add");
             rows.Add(i);
         }
         StateHasChanged();
 
-        await JsConsole!.LogAsync("Before StartTimer");
         StartTimer();
     }
 
     private async void StartTimer()
     {
-        await JsConsole!.LogAsync("StartTimer Start");
         Interlocked.Exchange(ref Countdown.Counter, 1000);
         while (Countdown.Counter > 0)
         {
@@ -106,7 +98,6 @@ Game: @Game!.CurrentRound
             StateHasChanged();
         }
 
-        await JsConsole!.LogAsync("Before ChangeState to Meme");
         // Timer is done, navigate to AdminResult
         Game!.ChangeState(GameState.Meme);
         navMan.NavigateTo($"/AdminResult/{isCorrect}");
