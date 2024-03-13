@@ -32,7 +32,7 @@ if (builder.Environment.IsDevelopment())
         new Uri("https://lakeplaystore.vault.azure.net/"),
         new DefaultAzureCredential());
     builder.Services.AddSingleton<LakePlayCosmosContext>();
-    builder.Services.AddScoped<ILakePlayRepo<TriviaQuestion>, LakePlayCosmosRepo>();
+    builder.Services.AddSingleton<ILakePlayRepo<TriviaQuestion>, LakePlayCosmosRepo>();
 }
 
 builder.Services.AddSingleton<Hub>(Hub.Default);
