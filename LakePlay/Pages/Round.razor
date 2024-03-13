@@ -91,11 +91,15 @@ Game: @Game.CurrentRound
                 NavManager!.NavigateTo(navigateLocation);
                 return;
             }
-            Hub!.Subscribe<GameStateChanged>((message) =>
+            Hub!.Subscribe<GameStateChanged>(async (message) =>
             {
+                await JsConsole!.LogAsync("Hub.Subscribe<GameStateChanged>");
                 var navigateLocation = Game!.CheckForNavigateLocation(false, GameState.InRound);
+
+                await JsConsole!.LogAsync($"CheckForNavigation {navigateLocation}");
                 if (navigateLocation != "")
                 {
+                    await JsConsole!.LogAsync("NavigateTo");
                     NavManager!.NavigateTo(navigateLocation);
                 }
             });
@@ -106,8 +110,11 @@ Game: @Game.CurrentRound
         }
 
         rows.Clear();
+
+        await JsConsole!.LogAsync($"ListOptions.Count {Game?.CurrentQuestion?.ListOptions?.Count}");
         for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
         {
+            await JsConsole!.LogAsync("rows.Add");
             rows.Add(i);
         }
         StateHasChanged();
