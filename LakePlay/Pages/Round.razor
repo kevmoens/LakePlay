@@ -140,10 +140,10 @@ Game: @Game.CurrentRound
             (key) => stat,
             (key, existingVal) =>
                 {
-                    existingVal.AddScore(Game!.CurrentRound, Countdown!.Counter);
                     return existingVal;
                 }
         );
+        Game!.Players[User.Email].AddScore(Game!.CurrentRound, Countdown!.Counter);
         selected = option.Text;
         rows.Clear();
     }
