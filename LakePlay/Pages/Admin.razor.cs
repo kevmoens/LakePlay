@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using Microsoft.Azure.Cosmos;
 using PubSub;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace LakePlay.Pages
 {
@@ -111,18 +112,35 @@ namespace LakePlay.Pages
         }
         async void OnResetGameStatus()
         {
-            Game!.ChangeState(GameState.NotSet);
-
-            Game.CurrentRound = 1;
-            foreach (var question in await QuestionRepo!.Where(q => q.AskedThisRound == true || q.Used == true))
+            try
             {
-                question.AskedThisRound = false;
-                question.Used = false;
-                QuestionRepo!.Update(question);
-            }
-            await QuestionRepo.SaveAsync();
+                await JsConsole!.LogAsync("OnResetGameStatus START");
+                Game!.ChangeState(GameState.NotSet);
 
-            StateHasChanged();
+                await JsConsole!.LogAsync("Before QuestionRepo");
+                if (QuestionRepo == null)
+                {
+                    await JsConsole!.LogAsync("QuestionRepo is null");
+                }
+                Game.CurrentRound = 1;
+                foreach (var question in await QuestionRepo!.Where(q => q.AskedThisRound == true || q.Used == true))
+                {
+                    await JsConsole!.LogAsync("Update question");
+                    question.AskedThisRound = false;
+                    question.Used = false;
+                    QuestionRepo!.Update(question);
+                }
+
+                await JsConsole!.LogAsync("Before SaveAsync");
+                await QuestionRepo.SaveAsync();
+
+                await JsConsole!.LogAsync("StateHasChanged()");
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
         }
     }
 }
