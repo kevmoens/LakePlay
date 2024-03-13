@@ -5,10 +5,10 @@ namespace LakePlay.Data
 {
     public class TriviaQuestionOption
     {
-        [ForeignKey("TriviaQuestion")]
+        //[ForeignKey("TriviaQuestion")]
         public string QuestionId { get; set; }  = string.Empty;
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        //[Key]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; } = string.Empty;
         public bool IsAnswer { get; set; }
         public string Text { get; set; } = string.Empty;
