@@ -1,4 +1,4 @@
-﻿h3 {
+﻿h2 {
     text-align: center;
 }
 p {
@@ -16,3 +16,28 @@ p {
         align-self: flex-end;
         margin-right: 10px;
     }
+
+.title-container {
+    display: flex; 
+    justify-content: center;
+}
+.title-image {
+    width: 320px;
+    height: 240px;
+}
+
+.flash {
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

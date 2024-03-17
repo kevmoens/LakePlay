@@ -16,7 +16,7 @@
 
 .login-overlay-title {
     position: absolute;
-    top: 20%;
+    top: 15%;
     left: 50%;
     height: 200px;
     width: 250px;
@@ -28,9 +28,9 @@
     position: absolute;
     top: 75%;
     left: 50%;
-    transform: translate(0%, -50%);
-    -webkit-transform: translate(0%, -50%);
-    -moz-transform: translate(0%, -50%);
+    transform: translate(-20%, -70%);
+    -webkit-transform: translate(-20%, -50%);
+    -moz-transform: translate(-20%, -50%);
 }
 
 .login-overlay-kt {
@@ -39,9 +39,9 @@
     width: 200px;
     top: 75%;
     left: 25%;
-    transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
+    transform: translate(-30%, -50%);
+    -webkit-transform: translate(-30%, -50%);
+    -moz-transform: translate(-30%, -50%);
 }
 
 .login-overlay-items {
