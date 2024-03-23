@@ -1,14 +1,20 @@
 ﻿@page "/adminresult/{isCorrect:bool}"
 
-
-<h3>Result</h3>
-
+<PageTitle>@Game?.GameName</PageTitle>
 <div class="image-container">
 
     <img class="image-result" style="object-fit: contain;" src="@ImageUrl" />
     <div class="center-result blinker">
         @Message
     </div>
+
+    <h3>Question</h3>
+    @Game!.CurrentQuestion?.Text
+
+    <h2>Correct Answer: </h2>
+
+    <h3>@Game?.CurrentQuestion?.ListOptions?.FirstOrDefault(q => q.IsAnswer)?.Text</h3>
+    
 </div>
 
 @code {

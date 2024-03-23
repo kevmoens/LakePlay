@@ -1,6 +1,7 @@
 ﻿@page "/adminintro"
 @using QRCoder
 
+<PageTitle>@Game?.GameName</PageTitle>
 <h3>Game Starting Shortly</h3>
 
 <div class="title-container">
@@ -8,11 +9,12 @@
 </div>
 
 <img src="data:image/png;base64,@(GenerateQRCodeBase64(NavManager!.BaseUri))" alt="QR Code">
-
 <img src="/Kwik-Trip-Logo.jpg" alt="Login Background Title" style="width:240px;height:80px;">
 <img src="/animation_500_Transparent.gif" alt="Login Background Title" style="width:240px; height:240px;">
-
+<img src="/20240317_181934735_iOS.png" alt="Login Background Title" style="width:240px; height:90px;">
+<br/>
 <button @onclick="OnStart">Start</button>
+
 @code {
     [Inject]
     Game? Game { get; set; }

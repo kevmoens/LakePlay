@@ -1,6 +1,5 @@
 ﻿@page "/meme"
-<h3>Meme</h3>
-
+<PageTitle>@Game?.GameName</PageTitle>
 <div class="image-container">
 
     <img class="image-result" style="object-fit: contain;" src="@ImageUrl" />
@@ -8,9 +7,19 @@
         @Message
     </div>
     <div>
-        @player?.Score
+        <b>Score</b> @player?.Score
     </div>
 </div>
+
+
+<h3>Question</h3>
+@Game!.CurrentQuestion?.Text
+
+<p>
+    <h2>Correct Answer: </h2>
+
+    <h3>@Game?.CurrentQuestion?.ListOptions?.FirstOrDefault(q => q.IsAnswer)?.Text</h3>
+</p>
 @code {
 
     [Inject]

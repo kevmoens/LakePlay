@@ -1,23 +1,35 @@
 ﻿@page "/adminend"
 @page "/admingameover"
-<h3>AdminEnd</h3>
 
+<PageTitle>@Game?.GameName</PageTitle>
 <h1>@WinnerLabel</h1>
 @if (Winners.Count > 0)
 {
-    <table>
-        <tr>
-            <th>Player</th>
-            <th>Score</th>
-        </tr>
-        @foreach (var winner in Winners)
-        {
+
+    <div class="center-result blinker">
+        <div class="video-container">
+        <table>
             <tr>
-                <td>@winner.UserName</td>
-                <td>@winner.Score</td>
+                <th>Player</th>
+                <th>Score</th>
             </tr>
-        }
-    </table>
+            @foreach (var winner in Winners)
+            {
+                <tr>
+                    <td>@winner.UserName</td>
+                    <td>@winner.Score</td>
+                </tr>
+            }
+        </table>
+
+
+            <img class="image-result" src="Winner.jpg" />
+
+
+        </div>
+    </div>
+
+
 }
 @code {
 

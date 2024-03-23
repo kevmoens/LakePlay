@@ -20,6 +20,10 @@
                 <td>Current Round</td>
                 <td><input type="number" @bind-value="Game!.CurrentRound" min="1" readonly /> </td>
             </tr>
+            <tr>
+                <td>Game Name</td>
+                <td><input type="text" @bind-value="Game!.GameName" /></td>
+            </tr>
         </table>
 
         <button @onclick="OnResetGameStatus">Reset Game</button>

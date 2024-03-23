@@ -1,9 +1,10 @@
 ﻿@page "/round"
-<h3>Round</h3>
-Game: @Game.CurrentRound
+<PageTitle>@Game?.GameName</PageTitle>
 
-@if (Game.CurrentQuestion != null)
+@if (Game?.CurrentQuestion != null)
 {
+    <label>Round: </label> @(Game?.CurrentRound - 1)
+    <br/>
     <h3>Question</h3>
     @Game!.CurrentQuestion?.Text
 
@@ -31,6 +32,9 @@ Game: @Game.CurrentRound
     }
     else
     {
+        <br/>
+        <br/>
+        <p>Options:</p>
         @foreach (var option in Game!.CurrentQuestion!.ListOptions)
         {
             @if (@option.Text == @selected)
@@ -127,7 +131,7 @@ Game: @Game.CurrentRound
             {
                 Email = User!.Email,
                 UserName = User!.UserName,
-                Score = roundScore
+                Score = 0
             };
 
         Game!.Players.AddOrUpdate(
@@ -138,7 +142,8 @@ Game: @Game.CurrentRound
                     return existingVal;
                 }
         );
-        Game!.Players[User.Email].AddScore(Game!.CurrentRound, Countdown!.Counter);
+        Game!.Players[User.Email].AddScore(Game!.CurrentRound, roundScore);
+        
         selected = option.Text;
         rows.Clear();
     }

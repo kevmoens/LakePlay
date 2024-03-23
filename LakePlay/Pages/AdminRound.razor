@@ -1,10 +1,9 @@
 ﻿@page "/adminround"
 
-<h3>AdminRound</h3>
 @inject NavigationManager navMan
 @inject Countdown Countdown
-<h3>Round</h3>
-Game: @Game!.CurrentRound
+<PageTitle>@Game?.GameName</PageTitle>
+Round: @(Game!.CurrentRound - 1)
 
 @if (Game.CurrentQuestion != null)
 {

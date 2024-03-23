@@ -1,0 +1,54 @@
+﻿h1 {
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, 0%);
+}
+.video-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 96%;
+    object-fit: contain;
+    height: calc(100vh - 300px);
+    top: 80px;
+    left:0px;
+}
+
+.video-result {
+    left: 50%;
+    position: absolute;
+}
+
+.image-result {
+    object-fit: contain;
+    height: 90%;
+    width: calc(100vw - 20px);
+}
+
+.center-result {
+    font-size: 80px;
+    font-weight: bolder;
+    position: absolute;
+    width: 97%;
+    top: 30px;
+    text-align: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+
+.blinker {
+    animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+th, tr {
+    padding: 10px;
+}

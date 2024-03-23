@@ -17,6 +17,7 @@ namespace LakePlay.Data
         public GameState State { get { return _State; } }
         public int CurrentRound { get; set; }
         public int NumberOfRounds { get; set; }
+        public string GameName { get; set; } = string.Empty;
         public TriviaQuestion? CurrentQuestion { get; set; }
         public ConcurrentDictionary<string, PlayerStats> Players { get; set; } = new ConcurrentDictionary<string, PlayerStats>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -75,6 +76,10 @@ namespace LakePlay.Data
         {
             var questions = _triviaQuestions.Where(q => q.Used == false && q.AskedThisRound == false).ToList();
             if (questions.Count == 0)
+            {
+                return false;
+            }
+            if (CurrentRound > NumberOfRounds)
             {
                 return false;
             }
