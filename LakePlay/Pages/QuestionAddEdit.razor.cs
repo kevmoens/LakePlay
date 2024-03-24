@@ -111,16 +111,47 @@ namespace LakePlay.Pages
         }
         protected async Task SaveQuestion()
         {
+            try
+            {
 
-            try { 
+                // Validate that one of the ListOptions has IsAnswer set to true
+                if (!question.ListOptions.Any(option => option.IsAnswer))
+                {
+                    await ShowMessageBox("At least one option must be marked as the answer.");
+                    return;
+                }
+                if (question.ListOptions.Count(option => option.IsAnswer) != 1)
+                {
+                    await ShowMessageBox("Only one option must be marked as the answer.");
+                    return;
+                }
+
+                // Loop through question.ListOptions and ensure unique IDs
+                HashSet<string> optionIds = new();
+                foreach (var option in question.ListOptions)
+                {
+                    if (string.IsNullOrEmpty(option.Id) || optionIds.Contains(option.Id))
+                    {
+                        option.Id = GenerateUniqueId(optionIds);
+                    }
+                    optionIds.Add(option.Id);
+                }
+
                 if (string.IsNullOrEmpty(QuestionId) == false)
                 {
-                    QuestionRepo!.Update(question);              
+                    QuestionRepo!.Update(question);
                 }
                 else
                 {
+                    var saveOptions = question.ListOptions.ToList();
+                    question.ListOptions.Clear();
                     QuestionRepo!.Add(question);
+                    foreach (var option in saveOptions)
+                    {
+                        question.ListOptions.Add(option);
+                    }
                 }
+
                 await QuestionRepo!.SaveAsync();
                 Cancel();
             }
@@ -129,7 +160,20 @@ namespace LakePlay.Pages
                 await JsConsole!.LogAsync(ex.Message);
             }
         }
-
+        private async Task ShowMessageBox(string message)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", message);
+        }
+        // Method to generate unique ID
+        private string GenerateUniqueId(HashSet<string> existingIds)
+        {
+            int newId = 1;
+            while (existingIds.Contains(newId.ToString()))
+            {
+                newId++;
+            }
+            return newId.ToString();
+        }
         public void Cancel()
         {
             NavManager!.NavigateTo("/questions");

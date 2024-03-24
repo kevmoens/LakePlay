@@ -16,6 +16,7 @@ namespace LakePlay.Data
         public void Add(TriviaQuestion entity)
         {
             _semaphore.Wait();
+            entity.Id = Guid.NewGuid().ToString();
             _context.Questions!.Add(entity);
             _semaphore.Release();
         }
