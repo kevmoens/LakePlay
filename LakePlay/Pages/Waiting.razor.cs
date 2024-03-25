@@ -14,8 +14,8 @@ namespace LakePlay.Pages
         NavigationManager? NavManager {get;set;}
         [Inject]
         ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
-        [Inject]
-        JsConsole? JsConsole { get; set; }
+        //[Inject]
+        //JsConsole? JsConsole { get; set; }
         [Inject]
         LoginVerification? LoginVerify { get; set; }
         [Inject]
@@ -57,7 +57,7 @@ namespace LakePlay.Pages
                 }
                 catch (Exception ex)
                 {
-                    await JsConsole!.LogAsync(ex.Message);
+                    //await JsConsole!.LogAsync(ex.Message);
                 }
             }
         }
@@ -72,7 +72,7 @@ namespace LakePlay.Pages
                 await UserLoginRepo!.Remove();
             } catch (Exception ex)
             {
-                await JsConsole!.LogAsync(ex.Message);
+                //await JsConsole!.LogAsync(ex.Message);
             }
             NavManager!.NavigateTo("/");
         }

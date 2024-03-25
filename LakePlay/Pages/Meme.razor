@@ -26,8 +26,8 @@
     NavigationManager? NavManager { get; set; }
     [Inject]
     ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
-    [Inject]
-    JsConsole? JsConsole { get; set; }
+    // [Inject]
+    // JsConsole? JsConsole { get; set; }
     [Inject]
     LoginVerification? LoginVerify { get; set; }
     [Inject]
@@ -98,7 +98,7 @@
             }
             catch (Exception ex)
             {
-                await JsConsole!.LogAsync(ex.Message);
+                //await JsConsole!.LogAsync(ex.Message);
             }
         }
     }

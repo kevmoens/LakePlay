@@ -27,8 +27,8 @@ namespace LakePlay.Pages
         LoginVerification? LoginVerify { get; set; }
         [Inject]
         UserLoginRepo? UserLoginRepo { get; set; }
-        [Inject]
-        JsConsole? JsConsole { get; set; }
+        //[Inject]
+        //JsConsole? JsConsole { get; set; }
         [Inject]
         ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
 
@@ -59,7 +59,7 @@ namespace LakePlay.Pages
                 }
                 catch (Exception ex)
                 {
-                    await JsConsole!.LogAsync(ex.Message);
+                    //await JsConsole!.LogAsync(ex.Message);
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace LakePlay.Pages
             }
             catch (Exception ex)
             {
-                await JsConsole!.LogAsync(ex.Message);
+                //await JsConsole!.LogAsync(ex.Message);
             }
             NavManager!.NavigateTo("/");
         }
@@ -157,7 +157,7 @@ namespace LakePlay.Pages
             }
             catch (Exception ex)
             {
-                await JsConsole!.LogAsync(ex.Message);
+                //await JsConsole!.LogAsync(ex.Message);
             }
         }
         private async Task ShowMessageBox(string message)

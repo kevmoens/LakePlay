@@ -10,8 +10,8 @@ namespace LakePlay.Pages
 
         [Inject]
         ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
-        [Inject]
-        JsConsole? JsConsole { get; set; }
+        //[Inject]
+        //JsConsole? JsConsole { get; set; }
         [Inject]
         NavigationManager? NavManager { get; set; }
         [Inject]
@@ -51,10 +51,11 @@ namespace LakePlay.Pages
             }
             catch (Exception ex)
             {
-                await JsConsole!.LogAsync(ex.Message);
+                //await JsConsole!.LogAsync(ex.Message);
             }
-            
-        }
+
+            //await JsConsole!.LogAsync("OnAfterRenderAsync COMPLETE");
+        }        
 
         private bool UsePreviousLogin()
         {
@@ -98,7 +99,8 @@ namespace LakePlay.Pages
 
         private async void OnStart()
         {
-            try {                 
+            try 
+            {
 
                 if (!ValidateForm())
                 {
@@ -122,7 +124,7 @@ namespace LakePlay.Pages
             }
             catch (Exception ex)
             {
-                await JsConsole!.LogAsync(ex.Message);
+                //await JsConsole!.LogAsync(ex.Message);
             }
         }
 
@@ -134,11 +136,11 @@ namespace LakePlay.Pages
                 return;
             }
 
-            //TODO Check if game is in progress....
-            //If so go to current page...
-
             //If Game hasn't started then go to Waiting Page
             NavManager!.NavigateTo("/Waiting");
+
+            //Waiting Page will Check if game is in progress....
+            //If so it goes to current page...
         }
     }
 }
