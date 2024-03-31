@@ -21,7 +21,7 @@ namespace TriviaForCheeseHeads.Data
             optionsBuilder.UseCosmos(
                 accountEndpoint,
                 accountKey,
-                "TriviaForCheeseHeads"
+                "LakePlay"
                 );
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

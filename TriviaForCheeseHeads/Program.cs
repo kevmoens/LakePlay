@@ -22,14 +22,14 @@ builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddTransient<UserLoginRepo>();
 builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
-if (builder.Environment.IsDevelopment())
+if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContext<TriviaForCheeseHeadsSqliteContext>(options => options.UseSqlite("TriviaForCheeseHeads.sqlite"));
     builder.Services.AddScoped<ITriviaForCheeseHeadsRepo<TriviaQuestion>, TriviaForCheeseHeadsSqliteRepo>();
 } else
 {
     builder.Configuration.AddAzureKeyVault(
-        new Uri("https://TriviaForCheeseHeadsstore.vault.azure.net/"),
+        new Uri("https://lakeplaystore.vault.azure.net/"),
         new DefaultAzureCredential());
     builder.Services.AddSingleton<TriviaForCheeseHeadsCosmosContext>();
     builder.Services.AddSingleton<ITriviaForCheeseHeadsRepo<TriviaQuestion>, TriviaForCheeseHeadsCosmosRepo>();
