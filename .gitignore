@@ -367,3 +367,9 @@ FodyWeavers.xsd
 /LakePlay/LakePlay.sqlite
 /LakePlay/LakePlay.sqlite-shm
 /LakePlay/LakePlay.sqlite-wal
+/TriviaForCheeseHeads/LakePlay.sqlite
+/TriviaForCheeseHeads/LakePlay.sqlite-shm
+/TriviaForCheeseHeads/LakePlay.sqlite-wal
+/TriviaForCheeseHeads/TimeOff.sqlite
+/TriviaForCheeseHeads/TimeOff.sqlite-shm
+/TriviaForCheeseHeads/TimeOff.sqlite-wal
