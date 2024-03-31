@@ -14,15 +14,20 @@ namespace TriviaForCheeseHeads.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            try
+            {
+                string? accountEndpoint = _configuration["CosmosAccountEndpoint"];
+                string? accountKey = _configuration["CosmosAccountKey"];
 
-            string? accountEndpoint = _configuration["CosmosAccountEndpoint"];
-            string? accountKey = _configuration["CosmosAccountKey"];
-
-            optionsBuilder.UseCosmos(
-                accountEndpoint,
-                accountKey,
-                "LakePlay"
-                );
+                optionsBuilder.UseCosmos(
+                    accountEndpoint,
+                    accountKey,
+                    "LakePlay"
+                    );
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

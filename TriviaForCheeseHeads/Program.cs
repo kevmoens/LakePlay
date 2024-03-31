@@ -28,9 +28,15 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddScoped<ITriviaForCheeseHeadsRepo<TriviaQuestion>, TriviaForCheeseHeadsSqliteRepo>();
 } else
 {
-    builder.Configuration.AddAzureKeyVault(
-        new Uri("https://lakeplaystore.vault.azure.net/"),
-        new DefaultAzureCredential());
+    try
+    {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri("https://lakeplaystore.vault.azure.net/"),
+            new DefaultAzureCredential());
+    }  catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
     builder.Services.AddSingleton<TriviaForCheeseHeadsCosmosContext>();
     builder.Services.AddSingleton<ITriviaForCheeseHeadsRepo<TriviaQuestion>, TriviaForCheeseHeadsCosmosRepo>();
 }
