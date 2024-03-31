@@ -22,7 +22,7 @@ builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddTransient<UserLoginRepo>();
 builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
-if (!builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContext<TriviaForCheeseHeadsSqliteContext>(options => options.UseSqlite("TriviaForCheeseHeads.sqlite"));
     builder.Services.AddScoped<ITriviaForCheeseHeadsRepo<TriviaQuestion>, TriviaForCheeseHeadsSqliteRepo>();
