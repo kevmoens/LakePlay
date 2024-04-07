@@ -2,7 +2,7 @@
 
 @inject NavigationManager navMan
 @inject Countdown Countdown
-<PageTitle>@Game?.GameName</PageTitle>
+<PageTitle>Trivia For Cheeseheads</PageTitle>
 Round: @(Game!.CurrentRound - 1)
 
 @if (Game.CurrentQuestion != null)
@@ -92,7 +92,7 @@ Round: @(Game!.CurrentRound - 1)
         Interlocked.Exchange(ref Countdown.Counter, 1000);
         while (Countdown.Counter > 0)
         {
-            await Task.Delay(60); // Delay for 1 minute
+            await Task.Delay(Game!.RoundLength); // Delay for 1 minute
             Interlocked.Decrement(ref Countdown.Counter);
             StateHasChanged();
         }

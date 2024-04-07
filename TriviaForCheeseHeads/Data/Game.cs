@@ -17,6 +17,9 @@ namespace TriviaForCheeseHeads.Data
         public GameState State { get { return _State; } }
         public int CurrentRound { get; set; }
         public int NumberOfRounds { get; set; }
+        public int RoundLength { get; set; }
+        public int LeaderboardLength { get; set; }
+        public int ResultLength { get; set; }
         public string GameName { get; set; } = string.Empty;
         public TriviaQuestion? CurrentQuestion { get; set; }
         public ConcurrentDictionary<string, PlayerStats> Players { get; set; } = new ConcurrentDictionary<string, PlayerStats>(StringComparer.InvariantCultureIgnoreCase);

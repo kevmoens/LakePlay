@@ -21,8 +21,16 @@
                 <td><input type="number" @bind-value="Game!.CurrentRound" min="1" readonly /> </td>
             </tr>
             <tr>
-                <td>Game Name</td>
-                <td><input type="text" @bind-value="Game!.GameName" /></td>
+                <td>Round Length in seconds</td>
+                <td><input type="number" @bind-value="Game!.RoundLength" min="1" /> </td>
+            </tr>
+            <tr>
+                <td>Leaderboard Length in seconds</td>
+                <td><input type="number" @bind-value="Game!.LeaderboardLength" min="1"  /> </td>
+            </tr>
+            <tr>
+                <td>Result Length in seconds</td>
+                <td><input type="number" @bind-value="Game!.ResultLength" min="1"  /> </td>
             </tr>
         </table>
 
@@ -32,5 +40,6 @@
 </div>
 
 <br/>
+<button @onclick="OnSave">Save</button>
 <button @onclick="OnQuestions">Questions</button>
 <button @onclick="OnStartGame">Start Game</button>

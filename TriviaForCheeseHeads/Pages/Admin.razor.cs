@@ -51,6 +51,49 @@ namespace TriviaForCheeseHeads.Pages
                 Game!.NumberOfRounds = numberOfRounds;
             }
 
+
+            var resultLengthstr = await LocalStorage!.GetItemAsync<string>("ResultLength");
+
+            if (int.TryParse(resultLengthstr, out int resultLength))
+            {
+                Game!.ResultLength = resultLength;
+            }
+
+            var leaderboardLengthstr = await LocalStorage!.GetItemAsync<string>("LeaderboardLength");
+
+            if (int.TryParse(leaderboardLengthstr, out int leaderboardLength))
+            {
+                Game!.LeaderboardLength = leaderboardLength;
+            }
+
+
+            var roundLengthstr = await LocalStorage!.GetItemAsync<string>("roundLength");
+
+            if (int.TryParse(roundLengthstr, out int roundLength))
+            {
+                Game!.RoundLength = roundLength;
+            }
+
+            bool saveNeeded = false;
+            if (Game!.ResultLength == 0)
+            {
+                Game!.ResultLength = 8;
+                saveNeeded = true;
+            }
+            if (Game!.LeaderboardLength == 0)
+            {
+                Game!.LeaderboardLength = 10;
+                saveNeeded = true;
+            }
+            if (Game!.RoundLength == 0)
+            {
+                Game!.RoundLength = 60;
+                saveNeeded = true;
+            }
+            if (saveNeeded)
+            {
+                await LocalStorage!.SetItemAsync("Game", Game);
+            }
             StateHasChanged();
         }
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -131,6 +174,19 @@ namespace TriviaForCheeseHeads.Pages
             catch (Exception ex)
             {
                 await JsConsole!.LogAsync(ex.Message);
+            }
+        }
+        async void OnSave()
+        {
+            try
+            {
+                await LocalStorage!.SetItemAsync("RoundLength", Game!.RoundLength.ToString());
+                await LocalStorage!.SetItemAsync("LeaderboardLength", Game!.LeaderboardLength.ToString());
+                await LocalStorage!.SetItemAsync("ResultLength", Game!.ResultLength.ToString());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }

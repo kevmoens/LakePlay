@@ -1,6 +1,6 @@
 ﻿@page "/adminresult/{isCorrect:bool}"
 
-<PageTitle>@Game?.GameName</PageTitle>
+<PageTitle>Trivia For Cheeseheads</PageTitle>
 <div class="image-container">
 
     <img class="image-result" style="object-fit: contain;" src="@ImageUrl" />
@@ -65,7 +65,7 @@
             }
             StateHasChanged();
             
-            await Task.Delay(10000);
+            await Task.Delay(Game!.ResultLength * 1000);
 
             Game!.ChangeState(GameState.Leaderboard);
             NavManager!.NavigateTo("/AdminLeaderBoard");

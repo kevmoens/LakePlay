@@ -6,6 +6,8 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using System.Collections.Concurrent;
+using TriviaForCheeseHeads.Data.MRT;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace TriviaForCheeseHeads.Pages
 {
@@ -29,6 +31,8 @@ namespace TriviaForCheeseHeads.Pages
         //JsConsole? JsConsole { get; set; }
         [Inject]
         ConcurrentDictionary<Guid, UserLogin>? UserLogins { get; set; }
+        [Inject]
+        Import? Import { get; set; } 
 
 
 
@@ -123,6 +127,12 @@ namespace TriviaForCheeseHeads.Pages
                 questionList = searchQuestionData;
                 StateHasChanged();
             }
+        }
+
+        async Task OnImport(InputFileChangeEventArgs e)
+        {
+            await Import!.ImportFile(e);
+            NavManager!.NavigateTo(NavManager!.Uri, forceLoad: true);
         }
     }
 }

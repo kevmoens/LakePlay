@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using PubSub;
 using System.Collections.Concurrent;
+using TriviaForCheeseHeads.Data.MRT;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddSingleton<ConcurrentDictionary<Guid, UserLogin>>();
 builder.Services.AddTransient<UserLoginRepo>();
 builder.Services.AddTransient<LoginVerification>();
 builder.Services.AddTransient<JsConsole>();
+builder.Services.AddTransient<Import>();
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContext<TriviaForCheeseHeadsSqliteContext>(options => options.UseSqlite("TriviaForCheeseHeads.sqlite"));
