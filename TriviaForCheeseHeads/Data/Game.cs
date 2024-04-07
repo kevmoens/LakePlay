@@ -1,4 +1,5 @@
 ﻿using PubSub;
+using QRCoder;
 using System.Collections.Concurrent;
 
 namespace TriviaForCheeseHeads.Data
@@ -20,6 +21,7 @@ namespace TriviaForCheeseHeads.Data
         public int RoundLength { get; set; }
         public int LeaderboardLength { get; set; }
         public int ResultLength { get; set; }
+        public string QrCode { get; set; }
         public string GameName { get; set; } = string.Empty;
         public TriviaQuestion? CurrentQuestion { get; set; }
         public ConcurrentDictionary<string, PlayerStats> Players { get; set; } = new ConcurrentDictionary<string, PlayerStats>(StringComparer.InvariantCultureIgnoreCase);
@@ -97,6 +99,21 @@ namespace TriviaForCheeseHeads.Data
         {
             CurrentRound = 1;
             Players.Clear();
+        }
+        public void SetQRCode(string qrCode)
+        {
+            QrCode = GenerateQRCodeBase64(qrCode);
+        }
+
+        private string GenerateQRCodeBase64(string text)
+        {
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+            PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+
+            var qrCodeImage = qrCode.GetGraphic(10);
+
+            return Convert.ToBase64String(qrCodeImage);
         }
     }
 }

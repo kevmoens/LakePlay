@@ -8,7 +8,7 @@
     <img src="/CHTrivia.png" alt="Login Background Title" class="title-image">
 </div>
 
-<img src="data:image/png;base64,@(GenerateQRCodeBase64(NavManager!.BaseUri))" alt="QR Code">
+<img src="data:image/png;base64,@(Game!.QrCode)" alt="QR Code">
 <img src="/Kwik-Trip-Logo.jpg" alt="Login Background Title" style="width:240px;height:80px;">
 <img src="/animation_500_Transparent.gif" alt="Login Background Title" style="width:240px; height:240px;">
 <img src="/20240317_181934735_iOS.png" alt="Login Background Title" style="width:240px; height:90px;">
@@ -54,16 +54,6 @@
         }
     }
 
-    private string GenerateQRCodeBase64(string text)
-    {
-        QRCodeGenerator qrGenerator = new QRCodeGenerator();
-        QRCodeData qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
-        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
-
-        var qrCodeImage = qrCode.GetGraphic(10);
-
-        return Convert.ToBase64String(qrCodeImage);
-    }
     private void OnStart()
     {
         Game!.Reset();

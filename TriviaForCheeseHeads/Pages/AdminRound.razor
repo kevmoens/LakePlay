@@ -8,7 +8,11 @@ Round: @(Game!.CurrentRound - 1)
 @if (Game.CurrentQuestion != null)
 {
     <h3>Question</h3>
-    @Game!.CurrentQuestion?.Text
+    <div class="question-qrcode">
+        <p>@Game!.CurrentQuestion?.Text</p>
+
+        <img src="data:image/png;base64,@(Game!.QrCode)" alt="QR Code" style="width:200px;height:200px;">
+    </div>
 
 
     <h3>Timer</h3>
@@ -32,6 +36,8 @@ Round: @(Game!.CurrentRound - 1)
             }
         </div>
     }
+
+
 
 }
 

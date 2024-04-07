@@ -100,7 +100,7 @@ namespace TriviaForCheeseHeads.Data.MRT
                             {
                                 Text = option.Text,
                                 IsAnswer = option.IsAnswer,
-                                Id = idx.ToString(),
+                                Id = Guid.NewGuid().ToString(),
                                 QuestionId = Id.ToString()
                             });
                         }
