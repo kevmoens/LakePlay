@@ -18,12 +18,31 @@ namespace TriviaForCheeseHeads.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TriviaQuestion>()
-                   .ToContainer("Questions")
-                   .HasPartitionKey(e => e.Id);
+			modelBuilder.Entity<TriviaQuestion>(question =>
+			{
+				question.HasKey(q => q.Id);
 
-            modelBuilder.Entity<TriviaQuestion>()
-                .OwnsMany(p => p.ListOptions);
-        }
+				question.Property(q => q.Id).IsRequired();
+				question.Property(q => q.Text).IsRequired();
+				question.Property(q => q.Difficulty).IsRequired();
+				question.Property(q => q.Used).IsRequired();
+				question.Property(q => q.AskedThisRound).IsRequired();
+
+				question.OwnsMany(q => q.ListOptions, option =>
+				{
+					option.WithOwner().HasForeignKey(o => o.QuestionId);
+
+					option.Property(o => o.Id).IsRequired();
+					option.Property(o => o.Text).IsRequired();
+					option.Property(o => o.IsAnswer).IsRequired();
+
+					// Define composite key
+					option.HasKey(o => new { o.Id, o.QuestionId });
+
+					// Optional: rename table and columns if needed
+					option.ToTable("TriviaQuestionOptions");
+				});
+			});
+		}
     }
 }

@@ -127,15 +127,12 @@ namespace TriviaForCheeseHeads.Pages
                 }
 
                 // Loop through question.ListOptions and ensure unique IDs
-                HashSet<string> optionIds = new();
-                foreach (var option in question.ListOptions)
+                int optionId = 1;
+				foreach (var option in question.ListOptions)
                 {
-                    if (string.IsNullOrEmpty(option.Id) || optionIds.Contains(option.Id))
-                    {
-                        option.Id = GenerateUniqueId(optionIds);
-                    }
-                    optionIds.Add(option.Id);
-                }
+                    option.Id = optionId.ToString();
+                    optionId++;
+				}
 
                 if (string.IsNullOrEmpty(QuestionId) == false)
                 {
@@ -143,12 +140,14 @@ namespace TriviaForCheeseHeads.Pages
                 }
                 else
                 {
-                    var saveOptions = question.ListOptions.ToList();
+                    question.Id = Guid.NewGuid().ToString(); // Generate a new unique ID for the question
+					var saveOptions = question.ListOptions.ToList();
                     question.ListOptions.Clear();
                     QuestionRepo!.Add(question);
                     foreach (var option in saveOptions)
                     {
-                        question.ListOptions.Add(option);
+                        option.QuestionId = question.Id; // Ensure the option has the correct QuestionId
+						question.ListOptions.Add(option);
                     }
                 }
 

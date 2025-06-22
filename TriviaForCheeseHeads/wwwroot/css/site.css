@@ -6,6 +6,7 @@
     --trivia-green: #203731;
     --trivia-yellow: #ffb612;
     --background-yellow: #ffc833;
+    --background-yellow-dark: #D9AB0C;
     --foreground-color: #000000;
     --foreground-button: #ffffff;
 }
@@ -13,6 +14,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--background-yellow);
 }
 
 h1:focus {

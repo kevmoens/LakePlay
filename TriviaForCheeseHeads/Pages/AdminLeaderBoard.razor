@@ -75,6 +75,17 @@
                 }
                 StateHasChanged();
 
+            }
+            catch (Exception ex)
+            {
+                await JsConsole!.LogAsync(ex.Message);
+            }
+        } else
+        {
+
+            try
+            {
+
                 await Task.Delay(Game!.LeaderboardLength * 1000);
                 if (Game!.PickNextQuestion())
                 {

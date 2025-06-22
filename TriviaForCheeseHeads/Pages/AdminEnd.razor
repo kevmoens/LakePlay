@@ -8,19 +8,28 @@
 
     <div class="center-result blinker">
         <div class="video-container">
-        <table>
-            <tr>
-                <th>Player</th>
-                <th>Score</th>
-            </tr>
-            @foreach (var winner in Winners)
-            {
+            <table>
                 <tr>
-                    <td>@winner.UserName</td>
-                    <td>@winner.Score</td>
+                    <th>Player</th>
+                    <th>Score</th>
+                    <th></th>
                 </tr>
-            }
-        </table>
+                @foreach (var winner in Winners)
+                {
+                    <tr>
+                        <td>@winner.UserName</td>
+                        <td>@winner.Score</td>
+                        <td>
+                            @if (ShowWinnerInfo)
+                            {
+                                <div style="font-size: 10px;">
+                                    @winner.Email
+                                </div>
+                            }                            
+                        </td>
+                    </tr>
+                }
+            </table>
 
 
             <img class="image-result" src="Winner.jpg" />
@@ -30,6 +39,19 @@
     </div>
 
 
+    <button @onclick="OnWinnerInfo" style="position:fixed; 
+      bottom: 5px; 
+      background-color: var(--background-yellow-dark);
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 8px;
+     ">
+        Contact Info For Winners
+    </button>
 }
 @code {
 
@@ -48,7 +70,7 @@
     [Inject]
     Hub? Hub { get; set; }
     private UserLogin? User { get; set; }
-
+    private bool ShowWinnerInfo { get; set; } = false;
     private List<PlayerStats> Winners = new();
     string WinnerLabel = "Winner";
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -94,6 +116,12 @@
                 await JsConsole!.LogAsync(ex.Message);
             }
         }
+    }
+
+    void OnWinnerInfo()
+    {
+        ShowWinnerInfo = !ShowWinnerInfo;
+        StateHasChanged();
     }
 
 }
