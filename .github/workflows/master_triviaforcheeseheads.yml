@@ -60,7 +60,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'TriviaForCheeseHeads'
+          app-name: 'LakePlay'
           slot-name: 'Production'
           package: .
           
