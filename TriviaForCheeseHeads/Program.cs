@@ -54,6 +54,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.Use(async (context, next) =>
+{
+	//context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
+	context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self' https://trivia4cheeseheads.com;");
+	await next();
+});
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
