@@ -1,6 +1,7 @@
 ﻿using PubSub;
 using QRCoder;
 using System.Collections.Concurrent;
+using System.Text;
 using TriviaForCheeseHeads.WebUtil;
 
 namespace TriviaForCheeseHeads.Data
@@ -9,13 +10,11 @@ namespace TriviaForCheeseHeads.Data
     {
         private readonly Hub _hub;
         private readonly List<TriviaQuestion> _triviaQuestions;
-        private readonly JsConsole _jsConsole;
 
-        public Game(Hub hub, List<TriviaQuestion> triviaQuestions, JsConsole jsConsole)
+        public Game(Hub hub, List<TriviaQuestion> triviaQuestions)
         {
             _hub = hub;
             _triviaQuestions = triviaQuestions;
-            _jsConsole = jsConsole;
 		}
         private GameState _State = GameState.NotSet;
         public GameState State { get { return _State; } }
@@ -80,33 +79,34 @@ namespace TriviaForCheeseHeads.Data
             };
         }
 
-        public async Task<bool> PickNextQuestion()
+        public (bool Success, string message) PickNextQuestion()
         {
-            await _jsConsole.LogAsync("Pick Next Question START");
+            StringBuilder sb = new StringBuilder();
+			sb.AppendLine("Pick Next Question START");
             if (_triviaQuestions == null)
             {
-				await _jsConsole.LogAsync("Questions NULL");
-                return false;
+				sb.AppendLine("Questions NULL");
+                return (false, sb.ToString());
 			}
 			var questions = _triviaQuestions.Where(q => q.Used == false && q.AskedThisRound == false).ToList();
             if (questions.Count == 0)
 			{
-				await _jsConsole.LogAsync("Question Count = 0");
-				return false;
+				sb.AppendLine("Question Count = 0");
+				return (false, sb.ToString());
             }
             if (CurrentRound > NumberOfRounds)
 			{
-				await _jsConsole.LogAsync("Current Round > Number of Rounds");
-				return false;
+				sb.AppendLine("Current Round > Number of Rounds");
+				return (false, sb.ToString());
             }
             var rnd = new Random();
             var idx = rnd.Next(questions.Count);
-			await _jsConsole.LogAsync($"Index {idx}");
+			sb.AppendLine($"Index {idx}");
 			var question = questions[idx];
             question.AskedThisRound = true;
             CurrentQuestion = question;
             CurrentRound++;
-            return true;
+            return (true, sb.ToString());
         }
         public void Reset()
         {

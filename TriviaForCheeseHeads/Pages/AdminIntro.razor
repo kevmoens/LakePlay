@@ -57,7 +57,8 @@
     private async void OnStart()
     {
         Game!.Reset();
-        await Game!.PickNextQuestion();
+        (_, string message) = Game!.PickNextQuestion();
+        await JsConsole!.LogAsync(message);
         NavManager!.NavigateTo("/AdminRound");
         Game!.ChangeState(GameState.InRound);
     }
