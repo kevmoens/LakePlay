@@ -1,6 +1,7 @@
 ﻿using PubSub;
 using QRCoder;
 using System.Collections.Concurrent;
+using TriviaForCheeseHeads.WebUtil;
 
 namespace TriviaForCheeseHeads.Data
 {
@@ -8,12 +9,14 @@ namespace TriviaForCheeseHeads.Data
     {
         private readonly Hub _hub;
         private readonly List<TriviaQuestion> _triviaQuestions;
+        private readonly JsConsole _jsConsole;
 
-        public Game(Hub hub, List<TriviaQuestion> triviaQuestions)
+        public Game(Hub hub, List<TriviaQuestion> triviaQuestions, JsConsole jsConsole)
         {
             _hub = hub;
             _triviaQuestions = triviaQuestions;
-        }
+            _jsConsole = jsConsole;
+		}
         private GameState _State = GameState.NotSet;
         public GameState State { get { return _State; } }
         public int CurrentRound { get; set; }
@@ -79,17 +82,27 @@ namespace TriviaForCheeseHeads.Data
 
         public bool PickNextQuestion()
         {
-            var questions = _triviaQuestions.Where(q => q.Used == false && q.AskedThisRound == false).ToList();
-            if (questions.Count == 0)
+            _jsConsole.LogAsync("Pick Next Question START").GetAwaiter().GetResult();
+            if (_triviaQuestions == null)
             {
+                _jsConsole.LogAsync("Questions NULL").GetAwaiter().GetResult();
                 return false;
+			}
+			var questions = _triviaQuestions.Where(q => q.Used == false && q.AskedThisRound == false).ToList();
+            if (questions.Count == 0)
+			{
+				_jsConsole.LogAsync("Question Count = 0").GetAwaiter().GetResult();
+				return false;
             }
             if (CurrentRound > NumberOfRounds)
-            {
-                return false;
+			{
+				_jsConsole.LogAsync("Current Round > Number of Rounds").GetAwaiter().GetResult();
+				return false;
             }
             var rnd = new Random();
-            var question = questions[rnd.Next(questions.Count)];
+            var idx = rnd.Next(questions.Count);
+			_jsConsole.LogAsync($"Index {idx}").GetAwaiter().GetResult();
+			var question = questions[idx];
             question.AskedThisRound = true;
             CurrentQuestion = question;
             CurrentRound++;
