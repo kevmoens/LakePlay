@@ -95,7 +95,7 @@ Round: @(Game!.CurrentRound - 1)
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"{ex.Message} {ex.StackTrace}");
+            await JsConsole.LogAsync($"{ex.Message} {ex.StackTrace}");
         }
     }
 
