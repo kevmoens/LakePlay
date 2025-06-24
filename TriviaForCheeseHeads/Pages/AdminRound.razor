@@ -84,6 +84,28 @@ Round: @(Game!.CurrentRound - 1)
             StateHasChanged();
 
             rows.Clear();
+            if (Game == null)
+            {
+                async JsConsole.LogAsync("Game is null.");
+            }
+            else
+            {
+                if (Game.CurrentQuestion == null)
+                {
+                    await JsConsole.LogAsync("CurrentQuestion is null.");
+                }
+                else
+                {
+                    if (Game.CurrentQuestion.ListOptions == null)
+                    {
+                        await JsConsole.LogAsync("ListOptions is null or empty.");
+                    }
+                    else
+                    {
+                        await JsConsole.LogAsync($"ListOptions count: {Game.CurrentQuestion.ListOptions.Count}");
+                    }
+                }
+            }  
 
             for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
             {
