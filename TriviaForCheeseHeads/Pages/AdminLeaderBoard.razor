@@ -87,7 +87,7 @@
             {
 
                 await Task.Delay(Game!.LeaderboardLength * 1000);
-                if (Game!.PickNextQuestion())
+                if (await Game!.PickNextQuestion())
                 {
                     navMan.NavigateTo("/AdminRound");
                     Game!.ChangeState(GameState.InRound);

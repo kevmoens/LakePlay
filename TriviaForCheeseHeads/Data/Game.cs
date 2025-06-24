@@ -80,28 +80,28 @@ namespace TriviaForCheeseHeads.Data
             };
         }
 
-        public bool PickNextQuestion()
+        public async Task<bool> PickNextQuestion()
         {
-            _jsConsole.LogAsync("Pick Next Question START").GetAwaiter().GetResult();
+            await _jsConsole.LogAsync("Pick Next Question START");
             if (_triviaQuestions == null)
             {
-                _jsConsole.LogAsync("Questions NULL").GetAwaiter().GetResult();
+				await _jsConsole.LogAsync("Questions NULL");
                 return false;
 			}
 			var questions = _triviaQuestions.Where(q => q.Used == false && q.AskedThisRound == false).ToList();
             if (questions.Count == 0)
 			{
-				_jsConsole.LogAsync("Question Count = 0").GetAwaiter().GetResult();
+				await _jsConsole.LogAsync("Question Count = 0");
 				return false;
             }
             if (CurrentRound > NumberOfRounds)
 			{
-				_jsConsole.LogAsync("Current Round > Number of Rounds").GetAwaiter().GetResult();
+				await _jsConsole.LogAsync("Current Round > Number of Rounds");
 				return false;
             }
             var rnd = new Random();
             var idx = rnd.Next(questions.Count);
-			_jsConsole.LogAsync($"Index {idx}").GetAwaiter().GetResult();
+			await _jsConsole.LogAsync($"Index {idx}");
 			var question = questions[idx];
             question.AskedThisRound = true;
             CurrentQuestion = question;

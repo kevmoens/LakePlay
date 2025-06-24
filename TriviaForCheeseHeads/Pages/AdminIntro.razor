@@ -54,10 +54,10 @@
         }
     }
 
-    private void OnStart()
+    private async void OnStart()
     {
         Game!.Reset();
-        Game!.PickNextQuestion();
+        await Game!.PickNextQuestion();
         NavManager!.NavigateTo("/AdminRound");
         Game!.ChangeState(GameState.InRound);
     }
