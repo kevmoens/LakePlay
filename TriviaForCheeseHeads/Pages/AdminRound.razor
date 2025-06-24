@@ -71,26 +71,32 @@ Round: @(Game!.CurrentRound - 1)
         {
             return;
         }
-
-        User = await UserLoginRepo!.Load();
-
-        if (LoginVerify!.VerifyLogin(User, true) == false)
+        try
         {
-            NavManager!.NavigateTo("/");
-            return;
+            User = await UserLoginRepo!.Load();
+
+            if (LoginVerify!.VerifyLogin(User, true) == false)
+            {
+                NavManager!.NavigateTo("/");
+                return;
+            }
+
+            StateHasChanged();
+
+            rows.Clear();
+
+            for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
+            {
+                rows.Add(i);
+            }
+            StateHasChanged();
+
+            StartTimer();
         }
-
-        StateHasChanged();
-
-        rows.Clear();
-
-        for (int i = 0; i < (int)(Game!.CurrentQuestion!.ListOptions.Count / 2); i++)
+        catch (Exception ex)
         {
-            rows.Add(i);
+            Console.Error.WriteLine($"{ex.Message} {ex.StackTrace}");
         }
-        StateHasChanged();
-
-        StartTimer();
     }
 
     private async void StartTimer()
