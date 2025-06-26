@@ -43,7 +43,7 @@ namespace TriviaForCheeseHeads.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            Game!.SetQRCode(NavManager!.BaseUri);
+            Game!.SetQRCode("Trivia4Cheeseheads.com"); // NavManager!.BaseUri);
             var numOfRounds = await LocalStorage!.GetItemAsync<string>("NumberOfRounds");
 
             if (int.TryParse(numOfRounds, out int numberOfRounds))
